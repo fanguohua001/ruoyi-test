@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsLocationMapper">
+
+    <resultMap type="WmsLocation" id="WmsLocationResult">
+        <result property="locationId"    column="location_id"    />
+        <result property="locationCode"    column="location_code"    />
+        <result property="locationName"    column="location_name"    />
+        <result property="locationType"    column="location_type"    />
+        <result property="areaCode"    column="area_code"    />
+        <result property="rowNo"    column="row_no"    />
+        <result property="columnNo"    column="column_no"    />
+        <result property="levelNo"    column="level_no"    />
+        <result property="maxWeight"    column="max_weight"    />
+        <result property="maxVolume"    column="max_volume"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectLocationVo">
+        select location_id, location_code, location_name, location_type, area_code, row_no, column_no, level_no, max_weight, max_volume, status, create_by, create_time, update_by, update_time, remark from wms_location
+    </sql>
+
+    <select id="selectLocationList" parameterType="WmsLocation" resultMap="WmsLocationResult">
+        <include refid="selectLocationVo"/>
+        <where>
+            <if test="locationCode != null  and locationCode != ''"> and location_code = #{locationCode}</if>
+            <if test="locationName != null  and locationName != ''"> and location_name like concat('%', #{locationName}, '%')</if>
+            <if test="locationType != null  and locationType != ''"> and location_type = #{locationType}</if>
+            <if test="areaCode != null  and areaCode != ''"> and area_code = #{areaCode}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectLocationById" parameterType="Long" resultMap="WmsLocationResult">
+        <include refid="selectLocationVo"/>
+        where location_id = #{locationId}
+    </select>
+
+    <select id="checkLocationCodeUnique" parameterType="String" resultMap="WmsLocationResult">
+        <include refid="selectLocationVo"/>
+        where location_code = #{locationCode}
+    </select>
+
+    <insert id="insertLocation" parameterType="WmsLocation" useGeneratedKeys="true" keyProperty="locationId">
+        insert into wms_location
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="locationCode != null and locationCode != ''">location_code,</if>
+            <if test="locationName != null and locationName != ''">location_name,</if>
+            <if test="locationType != null">location_type,</if>
+            <if test="areaCode != null">area_code,</if>
+            <if test="rowNo != null">row_no,</if>
+            <if test="columnNo != null">column_no,</if>
+            <if test="levelNo != null">level_no,</if>
+            <if test="maxWeight != null">max_weight,</if>
+            <if test="maxVolume != null">max_volume,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="locationCode != null and locationCode != ''">#{locationCode},</if>
+            <if test="locationName != null and locationName != ''">#{locationName},</if>
+            <if test="locationType != null">#{locationType},</if>
+            <if test="areaCode != null">#{areaCode},</if>
+            <if test="rowNo != null">#{rowNo},</if>
+            <if test="columnNo != null">#{columnNo},</if>
+            <if test="levelNo != null">#{levelNo},</if>
+            <if test="maxWeight != null">#{maxWeight},</if>
+            <if test="maxVolume != null">#{maxVolume},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLocation" parameterType="WmsLocation">
+        update wms_location
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="locationCode != null and locationCode != ''">location_code = #{locationCode},</if>
+            <if test="locationName != null and locationName != ''">location_name = #{locationName},</if>
+            <if test="locationType != null">location_type = #{locationType},</if>
+            <if test="areaCode != null">area_code = #{areaCode},</if>
+            <if test="rowNo != null">row_no = #{rowNo},</if>
+            <if test="columnNo != null">column_no = #{columnNo},</if>
+            <if test="levelNo != null">level_no = #{levelNo},</if>
+            <if test="maxWeight != null">max_weight = #{maxWeight},</if>
+            <if test="maxVolume != null">max_volume = #{maxVolume},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where location_id = #{locationId}
+    </update>
+
+    <delete id="deleteLocationById" parameterType="Long">
+        delete from wms_location where location_id = #{locationId}
+    </delete>
+
+    <delete id="deleteLocationByIds" parameterType="String">
+        delete from wms_location where location_id in
+        <foreach item="locationId" collection="array" open="(" separator="," close=")">
+            #{locationId}
+        </foreach>
+    </delete>
+</mapper>

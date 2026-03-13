@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsProductMapper">
+
+    <resultMap type="WmsProduct" id="WmsProductResult">
+        <result property="productId"    column="product_id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="category"    column="category"    />
+        <result property="specification"    column="specification"    />
+        <result property="unit"    column="unit"    />
+        <result property="safetyStock"    column="safety_stock"    />
+        <result property="maxStock"    column="max_stock"    />
+        <result property="shelfLifeDays"    column="shelf_life_days"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectProductVo">
+        select product_id, product_code, product_name, category, specification, unit, safety_stock, max_stock, shelf_life_days, status, create_by, create_time, update_by, update_time, remark from wms_product
+    </sql>
+
+    <select id="selectProductList" parameterType="WmsProduct" resultMap="WmsProductResult">
+        <include refid="selectProductVo"/>
+        <where>
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="category != null  and category != ''"> and category = #{category}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectProductById" parameterType="Long" resultMap="WmsProductResult">
+        <include refid="selectProductVo"/>
+        where product_id = #{productId}
+    </select>
+
+    <select id="checkProductCodeUnique" parameterType="String" resultMap="WmsProductResult">
+        <include refid="selectProductVo"/>
+        where product_code = #{productCode}
+    </select>
+
+    <insert id="insertProduct" parameterType="WmsProduct" useGeneratedKeys="true" keyProperty="productId">
+        insert into wms_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="category != null and category != ''">category,</if>
+            <if test="specification != null">specification,</if>
+            <if test="unit != null">unit,</if>
+            <if test="safetyStock != null">safety_stock,</if>
+            <if test="maxStock != null">max_stock,</if>
+            <if test="shelfLifeDays != null">shelf_life_days,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="category != null and category != ''">#{category},</if>
+            <if test="specification != null">#{specification},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="safetyStock != null">#{safetyStock},</if>
+            <if test="maxStock != null">#{maxStock},</if>
+            <if test="shelfLifeDays != null">#{shelfLifeDays},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProduct" parameterType="WmsProduct">
+        update wms_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="category != null and category != ''">category = #{category},</if>
+            <if test="specification != null">specification = #{specification},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="safetyStock != null">safety_stock = #{safetyStock},</if>
+            <if test="maxStock != null">max_stock = #{maxStock},</if>
+            <if test="shelfLifeDays != null">shelf_life_days = #{shelfLifeDays},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where product_id = #{productId}
+    </update>
+
+    <delete id="deleteProductById" parameterType="Long">
+        delete from wms_product where product_id = #{productId}
+    </delete>
+
+    <delete id="deleteProductByIds" parameterType="String">
+        delete from wms_product where product_id in
+        <foreach item="productId" collection="array" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+    </delete>
+</mapper>
