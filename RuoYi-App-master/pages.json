@@ -135,6 +135,21 @@
     "style": {
       "navigationBarTitleText": "移库执行"
     }
+  }, {
+    "path": "pages/wms/query/inventory",
+    "style": {
+      "navigationBarTitleText": "库存查询"
+    }
+  }, {
+    "path": "pages/wms/query/location",
+    "style": {
+      "navigationBarTitleText": "库位查询"
+    }
+  }, {
+    "path": "pages/wms/query/product",
+    "style": {
+      "navigationBarTitleText": "物料查询"
+    }
   }],
   "tabBar": {
     "color": "#000000",
