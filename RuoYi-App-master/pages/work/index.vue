@@ -74,6 +74,41 @@
 
 
       
+    <!-- WMS 仓储 -->
+    <uni-section title="WMS 仓储" type="line"></uni-section>
+    <view class="grid-body">
+      <uni-grid :column="4" :showBorder="false" @change="changeWmsGrid">
+        <uni-grid-item>
+          <view class="grid-item-box">
+            <uni-icons type="download-filled" size="30" color="#1890ff"></uni-icons>
+            <text class="text">入库作业</text>
+          </view>
+        </uni-grid-item>
+        <uni-grid-item>
+          <view class="grid-item-box">
+            <uni-icons type="shop-filled" size="30" color="#722ed1"></uni-icons>
+            <text class="text">出库作业</text>
+          </view>
+        </uni-grid-item>
+        <uni-grid-item>
+          <view class="grid-item-box">
+            <uni-icons type="compose-filled" size="30" color="#fa8c16"></uni-icons>
+            <text class="text">盘点作业</text>
+          </view>
+        </uni-grid-item>
+        <uni-grid-item>
+          <view class="grid-item-box">
+            <uni-icons type="swap-filled" size="30" color="#13c2c2"></uni-icons>
+            <text class="text">移库作业</text>
+          </view>
+        </uni-grid-item>
+        <uni-grid-item>
+          <view class="grid-item-box">
+            <uni-icons type="search-filled" size="30" color="#52c41a"></uni-icons>
+            <text class="text">查询功能</text>
+          </view>
+        </uni-grid-item>
+      </uni-grid>
     </view>
   </view>
 </template>
@@ -105,6 +140,23 @@
       },
       changeSystemGrid(e) {
         this.$modal.showToast('模块建设中~')
+      },
+      changeWmsGrid(e) {
+        // WMS 宫格点击跳转
+        const wmsPages = [
+          '/pages/wms/inbound/list',
+          '/pages/wms/outbound/list',
+          '/pages/wms/stockCheck/list',
+          '/pages/wms/transfer/list',
+          '/pages/wms/query/inventory'
+        ]
+        if (e.detail.index < wmsPages.length) {
+          uni.navigateTo({
+            url: wmsPages[e.detail.index]
+          })
+        } else {
+          this.$modal.showToast('模块建设中~')
+        }
       }
     }
   }
