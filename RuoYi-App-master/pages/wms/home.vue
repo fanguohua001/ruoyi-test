@@ -39,57 +39,55 @@
     <view class="home-section">
       <text class="section-title">出库作业</text>
       <view class="home-grid">
-        <view class="home-item">
+        <view class="home-item" @click="navigateTo('/pages/wms/outbound/list')">
           <view class="home-item__icon home-item__icon--outbound">
             <uni-icons type="shop" size="30" color="#fff"></uni-icons>
           </view>
           <text class="home-item__text">出库单列表</text>
         </view>
-        <view class="home-item">
+        <view class="home-item" @click="navigateTo('/pages/wms/outbound/picking')">
           <view class="home-item__icon home-item__icon--picking">
             <uni-icons type="gear" size="30" color="#fff"></uni-icons>
           </view>
           <text class="home-item__text">拣货</text>
         </view>
-        <view class="home-item">
+        <view class="home-item" @click="navigateTo('/pages/wms/outbound/review')">
           <view class="home-item__icon home-item__icon--review">
             <uni-icons type="eye" size="30" color="#fff"></uni-icons>
           </view>
           <text class="home-item__text">复核</text>
         </view>
-        <view class="home-item">
+        <view class="home-item" @click="navigateTo('/pages/wms/outbound/ship')">
           <view class="home-item__icon home-item__icon--ship">
             <uni-icons type="paperplane" size="30" color="#fff"></uni-icons>
           </view>
           <text class="home-item__text">发货</text>
         </view>
       </view>
-      <view class="home-tip">建设中...</view>
     </view>
 
     <view class="home-section">
       <text class="section-title">其他功能</text>
       <view class="home-grid home-grid--small">
-        <view class="home-item home-item--small">
+        <view class="home-item home-item--small" @click="navigateTo('/pages/wms/stockCheck/list')">
           <view class="home-item__icon home-item__icon--check">
             <uni-icons type="compose" size="24" color="#fff"></uni-icons>
           </view>
           <text class="home-item__text">盘点</text>
         </view>
-        <view class="home-item home-item--small">
+        <view class="home-item home-item--small" @click="navigateTo('/pages/wms/transfer/list')">
           <view class="home-item__icon home-item__icon--transfer">
             <uni-icons type="swap" size="24" color="#fff"></uni-icons>
           </view>
           <text class="home-item__text">移库</text>
         </view>
-        <view class="home-item home-item--small">
+        <view class="home-item home-item--small" @click="navigateTo('/pages/wms/query/inventory')">
           <view class="home-item__icon home-item__icon--query">
             <uni-icons type="search" size="24" color="#fff"></uni-icons>
           </view>
           <text class="home-item__text">查询</text>
         </view>
       </view>
-      <view class="home-tip">建设中...</view>
     </view>
   </view>
 </template>
