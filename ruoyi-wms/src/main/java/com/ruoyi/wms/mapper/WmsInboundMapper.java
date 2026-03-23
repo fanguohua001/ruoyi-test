@@ -98,4 +98,20 @@ public interface WmsInboundMapper
      * @return 结果
      */
     public int deleteWmsInboundItemByIds(Long[] itemIds);
+
+    /**
+     * 根据入库单 ID 删除入库明细
+     *
+     * @param inboundId 入库单 ID
+     * @return 结果
+     */
+    public int deleteWmsInboundItemByInboundId(Long inboundId);
+
+    /**
+     * 根据明细 ID 查询入库明细
+     *
+     * @param itemId 明细 ID
+     * @return 入库明细信息
+     */
+    public WmsInboundItem selectWmsInboundItemByItemId(Long itemId);
 }

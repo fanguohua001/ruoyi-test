@@ -8,6 +8,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="locationId"    column="location_id"    />
         <result property="locationCode"    column="location_code"    />
         <result property="locationName"    column="location_name"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="warehouseCode"    column="warehouse_code"    />
+        <result property="warehouseName"    column="warehouse_name"    />
+        <result property="zoneId"    column="zone_id"    />
+        <result property="zoneCode"    column="zone_code"    />
+        <result property="zoneName"    column="zone_name"    />
         <result property="locationType"    column="location_type"    />
         <result property="areaCode"    column="area_code"    />
         <result property="rowNo"    column="row_no"    />
@@ -24,7 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectLocationVo">
-        select location_id, location_code, location_name, location_type, area_code, row_no, column_no, level_no, max_weight, max_volume, status, create_by, create_time, update_by, update_time, remark from wms_location
+        select location_id, location_code, location_name, warehouse_id, zone_id, location_type, area_code, row_no, column_no, level_no, max_weight, max_volume, status, create_by, create_time, update_by, update_time, remark from wms_location
     </sql>
 
     <select id="selectLocationList" parameterType="WmsLocation" resultMap="WmsLocationResult">
@@ -32,8 +38,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>
             <if test="locationCode != null  and locationCode != ''"> and location_code = #{locationCode}</if>
             <if test="locationName != null  and locationName != ''"> and location_name like concat('%', #{locationName}, '%')</if>
+            <if test="warehouseId != null"> and warehouse_id = #{warehouseId}</if>
+            <if test="zoneId != null"> and zone_id = #{zoneId}</if>
             <if test="locationType != null  and locationType != ''"> and location_type = #{locationType}</if>
-            <if test="areaCode != null  and areaCode != ''"> and area_code = #{areaCode}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
     </select>
@@ -53,6 +60,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="locationCode != null and locationCode != ''">location_code,</if>
             <if test="locationName != null and locationName != ''">location_name,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="zoneId != null">zone_id,</if>
             <if test="locationType != null">location_type,</if>
             <if test="areaCode != null">area_code,</if>
             <if test="rowNo != null">row_no,</if>
@@ -68,6 +77,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="locationCode != null and locationCode != ''">#{locationCode},</if>
             <if test="locationName != null and locationName != ''">#{locationName},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="zoneId != null">#{zoneId},</if>
             <if test="locationType != null">#{locationType},</if>
             <if test="areaCode != null">#{areaCode},</if>
             <if test="rowNo != null">#{rowNo},</if>
@@ -87,6 +98,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="locationCode != null and locationCode != ''">location_code = #{locationCode},</if>
             <if test="locationName != null and locationName != ''">location_name = #{locationName},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="zoneId != null">zone_id = #{zoneId},</if>
             <if test="locationType != null">location_type = #{locationType},</if>
             <if test="areaCode != null">area_code = #{areaCode},</if>
             <if test="rowNo != null">row_no = #{rowNo},</if>

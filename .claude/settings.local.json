@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(which mvn:*)",
+      "Bash(which java:*)",
+      "Read(//f/MyDocNew/**)",
+      "Bash(mvn clean:*)",
+      "Bash(cd E:/MyDocNew/RuoYiNew && mvn compile -pl ruoyi-wms -am -DskipTests)",
+      "Bash(cd E:/MyDocNew/RuoYiNew && mvn package -DskipTests -DskipTests=true)",
+      "Bash(cd E:/MyDocNew/RuoYiNew/ruoyi-admin && java -jar target/ruoyi-admin.jar)",
+      "Bash(curl -s -X GET \"http://localhost:8080/dev-api/wms/product/list\" -H \"Content-Type: application/json\" 2>&1 | head -50)",
+      "Bash(curl -s -X POST \"http://localhost:8080/prod-api/system/login\" \\\\\n  -H \"Content-Type: application/json\" \\\\\n  -d '{\"username\":\"admin\",\"password\":\"admin123\",\"code\":\"\",\"uuid\":\"\"}' 2>&1)",
+      "Bash(cd E:/MyDocNew/RuoYiNew/ruoyi-ui && npm run dev)",
+      "Bash(mysql:*)",
+      "Bash(mvn compile:*)",
+      "Bash(xargs -I {} basename {} .class)"
+    ]
+  }
+}

@@ -30,7 +30,7 @@ public interface WmsInventoryMapper
     /**
      * 查询实时库存数量
      *
-     * @param productId 商品 ID
+     * @param productId 物料 ID
      * @param warehouseId 仓库 ID
      * @return 库存数量
      */
@@ -83,4 +83,22 @@ public interface WmsInventoryMapper
      * @return 结果
      */
     public int decreaseInventory(WmsInventory wmsInventory);
+
+    /**
+     * 根据参数查询库存
+     *
+     * @param productId 物料 ID
+     * @param warehouseId 仓库 ID
+     * @param locationId 库位 ID
+     * @param batchNo 批次号
+     * @return 库存信息
+     */
+    public WmsInventory selectInventoryByParams(Long productId, Long warehouseId, Long locationId, String batchNo);
+
+    /**
+     * 查询低库存预警
+     *
+     * @return 库存集合
+     */
+    public List<WmsInventory> selectInventoryLowStock();
 }

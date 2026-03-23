@@ -3,13 +3,13 @@
 -- ----------------------------
 
 -- ----------------------------
--- 1. 商品表
+-- 1. 物料表
 -- ----------------------------
 DROP TABLE IF EXISTS `wms_product`;
 CREATE TABLE `wms_product` (
-  `product_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '商品 ID',
-  `product_code` varchar(50) NOT NULL COMMENT '商品编码',
-  `product_name` varchar(200) NOT NULL COMMENT '商品名称',
+  `product_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '物料 ID',
+  `product_code` varchar(50) NOT NULL COMMENT '物料编码',
+  `product_name` varchar(200) NOT NULL COMMENT '物料名称',
   `category` varchar(50) DEFAULT NULL COMMENT '分类',
   `specification` varchar(100) DEFAULT NULL COMMENT '规格型号',
   `unit` varchar(20) DEFAULT NULL COMMENT '单位',
@@ -24,7 +24,7 @@ CREATE TABLE `wms_product` (
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`product_id`),
   UNIQUE KEY `uk_product_code` (`product_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='商品表';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='物料表';
 
 -- ----------------------------
 -- 2. 库位表
@@ -41,7 +41,7 @@ CREATE TABLE `wms_location` (
   `level_no` varchar(20) DEFAULT NULL COMMENT '层号',
   `max_weight` decimal(10,2) DEFAULT NULL COMMENT '最大承重',
   `max_volume` decimal(10,2) DEFAULT NULL COMMENT '最大体积',
-  `status` char(1) DEFAULT '1' COMMENT '状态（0 禁用 1 启用 2 占用 3 锁定）',
+  `status` char(1) DEFAULT '0' COMMENT '状态（0 正常 1 停用 2 占用 3 锁定）',
   `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
@@ -64,7 +64,8 @@ CREATE TABLE `wms_inbound_order` (
   `supplier_id` bigint(20) DEFAULT NULL COMMENT '供应商 ID',
   `supplier_name` varchar(200) DEFAULT NULL COMMENT '供应商名称',
   `warehouse_id` bigint(20) DEFAULT NULL COMMENT '仓库 ID',
-  `status` char(1) DEFAULT '0' COMMENT '状态（0 草稿 1 待收货 2 收货中 3 待质检 4 待上架 5 已完成 6 已取消）',
+  `status` char(1) DEFAULT '0' COMMENT '状态（0 无 1 待收货 2 收货中 3 待质检 4 待上架 5 已入库）',
+  `is_finished` tinyint(1) DEFAULT '0' COMMENT '是否完成（0 草稿 1 已完成）',
   `total_qty` decimal(10,2) DEFAULT '0' COMMENT '总数量',
   `received_qty` decimal(10,2) DEFAULT '0' COMMENT '已收货数量',
   `qualified_qty` decimal(10,2) DEFAULT '0' COMMENT '合格数量',
@@ -90,9 +91,9 @@ DROP TABLE IF EXISTS `wms_inbound_item`;
 CREATE TABLE `wms_inbound_item` (
   `item_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '明细 ID',
   `inbound_id` bigint(20) NOT NULL COMMENT '入库单 ID',
-  `product_id` bigint(20) NOT NULL COMMENT '商品 ID',
-  `product_code` varchar(50) DEFAULT NULL COMMENT '商品编码',
-  `product_name` varchar(200) DEFAULT NULL COMMENT '商品名称',
+  `product_id` bigint(20) NOT NULL COMMENT '物料 ID',
+  `product_code` varchar(50) DEFAULT NULL COMMENT '物料编码',
+  `product_name` varchar(200) DEFAULT NULL COMMENT '物料名称',
   `expected_qty` decimal(10,2) DEFAULT '0' COMMENT '应收数量',
   `received_qty` decimal(10,2) DEFAULT '0' COMMENT '实收数量',
   `qualified_qty` decimal(10,2) DEFAULT '0' COMMENT '合格数量',
@@ -126,7 +127,8 @@ CREATE TABLE `wms_outbound_order` (
   `customer_id` bigint(20) DEFAULT NULL COMMENT '客户 ID',
   `customer_name` varchar(200) DEFAULT NULL COMMENT '客户名称',
   `warehouse_id` bigint(20) DEFAULT NULL COMMENT '仓库 ID',
-  `status` char(1) DEFAULT '0' COMMENT '状态（0 草稿 1 待审核 2 待拣货 3 拣货中 4 待复核 5 待打包 6 待发货 7 已发货 8 已完成 9 已取消）',
+  `status` char(1) DEFAULT '0' COMMENT '状态（0 无 1 待审核 2 待拣货 3 拣货中 4 待复核 5 待打包 6 待发货 7 已发货 8 已取消）',
+  `is_finished` tinyint(1) DEFAULT '0' COMMENT '是否完成（0 草稿 1 已完成）',
   `priority` char(1) DEFAULT '1' COMMENT '优先级（1 普通 2 加急 3 特急）',
   `wave_no` varchar(50) DEFAULT NULL COMMENT '波次号',
   `total_qty` decimal(10,2) DEFAULT '0' COMMENT '总数量',
@@ -154,9 +156,9 @@ DROP TABLE IF EXISTS `wms_outbound_item`;
 CREATE TABLE `wms_outbound_item` (
   `item_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '明细 ID',
   `outbound_id` bigint(20) NOT NULL COMMENT '出库单 ID',
-  `product_id` bigint(20) NOT NULL COMMENT '商品 ID',
-  `product_code` varchar(50) DEFAULT NULL COMMENT '商品编码',
-  `product_name` varchar(200) DEFAULT NULL COMMENT '商品名称',
+  `product_id` bigint(20) NOT NULL COMMENT '物料 ID',
+  `product_code` varchar(50) DEFAULT NULL COMMENT '物料编码',
+  `product_name` varchar(200) DEFAULT NULL COMMENT '物料名称',
   `order_qty` decimal(10,2) DEFAULT '0' COMMENT '订单数量',
   `picked_qty` decimal(10,2) DEFAULT '0' COMMENT '已拣货数量',
   `shipped_qty` decimal(10,2) DEFAULT '0' COMMENT '已发货数量',
@@ -180,9 +182,9 @@ CREATE TABLE `wms_inventory` (
   `inventory_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '库存 ID',
   `warehouse_id` bigint(20) DEFAULT NULL COMMENT '仓库 ID',
   `location_id` bigint(20) DEFAULT NULL COMMENT '库位 ID',
-  `product_id` bigint(20) NOT NULL COMMENT '商品 ID',
-  `product_code` varchar(50) DEFAULT NULL COMMENT '商品编码',
-  `product_name` varchar(200) DEFAULT NULL COMMENT '商品名称',
+  `product_id` bigint(20) NOT NULL COMMENT '物料 ID',
+  `product_code` varchar(50) DEFAULT NULL COMMENT '物料编码',
+  `product_name` varchar(200) DEFAULT NULL COMMENT '物料名称',
   `batch_no` varchar(50) DEFAULT NULL COMMENT '批次号',
   `production_date` date DEFAULT NULL COMMENT '生产日期',
   `expiry_date` date DEFAULT NULL COMMENT '有效期至',
@@ -218,7 +220,9 @@ CREATE TABLE `wms_inventory_ledger` (
   `transaction_type` char(1) DEFAULT NULL COMMENT '交易类型（1 入库 2 出库 3 盘点调整 4 移库 5 冻结/解冻）',
   `warehouse_id` bigint(20) DEFAULT NULL COMMENT '仓库 ID',
   `location_id` bigint(20) DEFAULT NULL COMMENT '库位 ID',
-  `product_id` bigint(20) NOT NULL COMMENT '商品 ID',
+  `product_id` bigint(20) NOT NULL COMMENT '物料 ID',
+  `product_code` varchar(50) DEFAULT NULL COMMENT '物料编码',
+  `product_name` varchar(200) DEFAULT NULL COMMENT '物料名称',
   `batch_no` varchar(50) DEFAULT NULL COMMENT '批次号',
   `qty_before` decimal(10,2) DEFAULT '0' COMMENT '变动前数量',
   `qty_change` decimal(10,2) DEFAULT '0' COMMENT '变动数量 (+入 - 出)',
@@ -226,12 +230,15 @@ CREATE TABLE `wms_inventory_ledger` (
   `unit_cost` decimal(12,4) DEFAULT '0' COMMENT '单位成本',
   `reference_type` varchar(50) DEFAULT NULL COMMENT '关联单据类型',
   `reference_id` bigint(20) DEFAULT NULL COMMENT '关联单据 ID',
+  `reference_no` varchar(50) DEFAULT NULL COMMENT '关联单据号',
   `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`ledger_id`),
   KEY `idx_transaction_no` (`transaction_no`),
   KEY `idx_product_id` (`product_id`),
+  KEY `idx_reference_type` (`reference_type`),
+  KEY `idx_reference_id` (`reference_id`),
   KEY `idx_create_time` (`create_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='库存台账表';
 
@@ -245,7 +252,7 @@ CREATE TABLE `wms_stock_check` (
   `check_type` char(1) DEFAULT '1' COMMENT '盘点类型（1 定期盘点 2 循环盘点 3 动盘 4 静盘）',
   `warehouse_id` bigint(20) DEFAULT NULL COMMENT '仓库 ID',
   `location_id` bigint(20) DEFAULT NULL COMMENT '库位 ID',
-  `product_id` bigint(20) DEFAULT NULL COMMENT '商品 ID',
+  `product_id` bigint(20) DEFAULT NULL COMMENT '物料 ID',
   `status` char(1) DEFAULT '0' COMMENT '状态（0 草稿 1 盘点中 2 待审核 3 已完成 4 已取消）',
   `plan_date` date DEFAULT NULL COMMENT '计划盘点日期',
   `start_time` datetime DEFAULT NULL COMMENT '开始时间',
@@ -292,9 +299,9 @@ CREATE TABLE `wms_transfer` (
 DROP TABLE IF EXISTS `wms_alert`;
 CREATE TABLE `wms_alert` (
   `alert_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '预警 ID',
-  `product_id` bigint(20) DEFAULT NULL COMMENT '商品 ID',
-  `product_code` varchar(50) DEFAULT NULL COMMENT '商品编码',
-  `product_name` varchar(200) DEFAULT NULL COMMENT '商品名称',
+  `product_id` bigint(20) DEFAULT NULL COMMENT '物料 ID',
+  `product_code` varchar(50) DEFAULT NULL COMMENT '物料编码',
+  `product_name` varchar(200) DEFAULT NULL COMMENT '物料名称',
   `warehouse_id` bigint(20) DEFAULT NULL COMMENT '仓库 ID',
   `alert_type` char(1) DEFAULT NULL COMMENT '预警类型（1 低于安全库存 2 高于最高库存 3 近效期 4 已过期 5 呆滞）',
   `alert_level` char(1) DEFAULT NULL COMMENT '预警级别（1 提示 2 警告 3 严重）',

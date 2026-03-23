@@ -10,7 +10,7 @@ import com.ruoyi.wms.mapper.WmsProductMapper;
 import com.ruoyi.wms.service.IWmsProductService;
 
 /**
- * 商品 Service 业务层处理
+ * 物料 Service 业务层处理
  *
  * @author ruoyi
  */
@@ -21,10 +21,10 @@ public class WmsProductServiceImpl implements IWmsProductService
     private WmsProductMapper wmsProductMapper;
 
     /**
-     * 查询商品信息
+     * 查询物料信息
      *
-     * @param productId 商品 ID
-     * @return 商品信息
+     * @param productId 物料 ID
+     * @return 物料信息
      */
     @Override
     public WmsProduct selectWmsProductById(Long productId)
@@ -33,10 +33,10 @@ public class WmsProductServiceImpl implements IWmsProductService
     }
 
     /**
-     * 查询商品列表
+     * 查询物料列表
      *
-     * @param wmsProduct 商品信息
-     * @return 商品
+     * @param wmsProduct 物料信息
+     * @return 物料
      */
     @Override
     public List<WmsProduct> selectWmsProductList(WmsProduct wmsProduct)
@@ -45,9 +45,9 @@ public class WmsProductServiceImpl implements IWmsProductService
     }
 
     /**
-     * 新增商品信息
+     * 新增物料信息
      *
-     * @param wmsProduct 商品信息
+     * @param wmsProduct 物料信息
      * @return 结果
      */
     @Override
@@ -58,9 +58,9 @@ public class WmsProductServiceImpl implements IWmsProductService
     }
 
     /**
-     * 修改商品信息
+     * 修改物料信息
      *
-     * @param wmsProduct 商品信息
+     * @param wmsProduct 物料信息
      * @return 结果
      */
     @Override
@@ -71,9 +71,9 @@ public class WmsProductServiceImpl implements IWmsProductService
     }
 
     /**
-     * 删除商品信息
+     * 删除物料信息
      *
-     * @param productIds 需要删除的商品 ID
+     * @param productIds 需要删除的物料 ID
      * @return 结果
      */
     @Override
@@ -84,9 +84,9 @@ public class WmsProductServiceImpl implements IWmsProductService
     }
 
     /**
-     * 删除商品信息
+     * 删除物料信息
      *
-     * @param productId 商品 ID
+     * @param productId 物料 ID
      * @return 结果
      */
     @Override
@@ -97,9 +97,9 @@ public class WmsProductServiceImpl implements IWmsProductService
     }
 
     /**
-     * 校验商品编码是否唯一
+     * 校验物料编码是否唯一
      *
-     * @param wmsProduct 商品信息
+     * @param wmsProduct 物料信息
      * @return 结果
      */
     @Override

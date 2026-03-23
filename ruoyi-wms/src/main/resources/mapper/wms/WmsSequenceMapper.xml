@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsSequenceMapper">
+
+    <resultMap type="WmsSequence" id="WmsSequenceResult">
+        <result property="sequenceId"    column="sequence_id"    />
+        <result property="bizType"    column="biz_type"    />
+        <result property="prefix"    column="prefix"    />
+        <result property="currentSeq"    column="current_seq"    />
+        <result property="seqLength"    column="seq_length"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectSequenceVo">
+        select sequence_id, biz_type, prefix, current_seq, seq_length, update_date, create_by, create_time, update_by, update_time, remark from wms_sequence
+    </sql>
+
+    <select id="selectSequenceByBizType" parameterType="String" resultMap="WmsSequenceResult">
+        <include refid="selectSequenceVo"/>
+        where biz_type = #{bizType} for update
+    </select>
+
+    <insert id="insertSequence" parameterType="WmsSequence">
+        insert into wms_sequence
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sequenceId != null">sequence_id,</if>
+            <if test="bizType != null">biz_type,</if>
+            <if test="prefix != null">prefix,</if>
+            <if test="currentSeq != null">current_seq,</if>
+            <if test="seqLength != null">seq_length,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sequenceId != null">#{sequenceId},</if>
+            <if test="bizType != null">#{bizType},</if>
+            <if test="prefix != null">#{prefix},</if>
+            <if test="currentSeq != null">#{currentSeq},</if>
+            <if test="seqLength != null">#{seqLength},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <!-- 更新序号（自增 1） -->
+    <update id="incrementSequence" parameterType="String">
+        update wms_sequence
+        set current_seq = current_seq + 1,
+            update_time = now()
+        where biz_type = #{bizType}
+    </update>
+
+</mapper>

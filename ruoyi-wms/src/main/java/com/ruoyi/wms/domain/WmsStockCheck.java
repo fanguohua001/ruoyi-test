@@ -37,8 +37,8 @@ public class WmsStockCheck extends BaseEntity
     @Excel(name = "库位 ID", cellType = Excel.ColumnType.NUMERIC)
     private Long locationId;
 
-    /** 商品 ID */
-    @Excel(name = "商品 ID", cellType = Excel.ColumnType.NUMERIC)
+    /** 物料 ID */
+    @Excel(name = "物料 ID", cellType = Excel.ColumnType.NUMERIC)
     private Long productId;
 
     /** 状态（0 草稿 1 盘点中 2 待审核 3 已完成 4 已取消） */

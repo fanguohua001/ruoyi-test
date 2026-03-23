@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsTransferMapper">
+
+    <resultMap type="WmsTransfer" id="WmsTransferResult">
+        <result property="transferId"    column="transfer_id"    />
+        <result property="transferNo"    column="transfer_no"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="fromLocationId"    column="from_location_id"    />
+        <result property="toLocationId"    column="to_location_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="qty"    column="qty"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTransferVo">
+        select transfer_id, transfer_no, warehouse_id, from_location_id, to_location_id, product_id, product_code, product_name, qty, status, create_by, create_time, update_by, update_time, remark from wms_transfer
+    </sql>
+
+    <select id="selectTransferList" parameterType="WmsTransfer" resultMap="WmsTransferResult">
+        <include refid="selectTransferVo"/>
+        <where>
+            <if test="transferNo != null  and transferNo != ''"> and transfer_no = #{transferNo}</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="fromLocationId != null "> and from_location_id = #{fromLocationId}</if>
+            <if test="toLocationId != null "> and to_location_id = #{toLocationId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectTransferById" parameterType="Long" resultMap="WmsTransferResult">
+        <include refid="selectTransferVo"/>
+        where transfer_id = #{transferId}
+    </select>
+
+    <select id="checkTransferNoUnique" parameterType="String" resultMap="WmsTransferResult">
+        <include refid="selectTransferVo"/>
+        where transfer_no = #{transferNo}
+    </select>
+
+    <insert id="insertTransfer" parameterType="WmsTransfer" useGeneratedKeys="true" keyProperty="transferId">
+        insert into wms_transfer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="transferNo != null and transferNo != ''">transfer_no,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="fromLocationId != null">from_location_id,</if>
+            <if test="toLocationId != null">to_location_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="qty != null">qty,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="transferNo != null and transferNo != ''">#{transferNo},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="fromLocationId != null">#{fromLocationId},</if>
+            <if test="toLocationId != null">#{toLocationId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="qty != null">#{qty},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransfer" parameterType="WmsTransfer">
+        update wms_transfer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="transferNo != null and transferNo != ''">transfer_no = #{transferNo},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="fromLocationId != null">from_location_id = #{fromLocationId},</if>
+            <if test="toLocationId != null">to_location_id = #{toLocationId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="qty != null">qty = #{qty},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where transfer_id = #{transferId}
+    </update>
+
+    <delete id="deleteTransferById" parameterType="Long">
+        delete from wms_transfer where transfer_id = #{transferId}
+    </delete>
+
+    <delete id="deleteTransferByIds" parameterType="String">
+        delete from wms_transfer where transfer_id in
+        <foreach item="transferId" collection="array" open="(" separator="," close=")">
+            #{transferId}
+        </foreach>
+    </delete>
+</mapper>

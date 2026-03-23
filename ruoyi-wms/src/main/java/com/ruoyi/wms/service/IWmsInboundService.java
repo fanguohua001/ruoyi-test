@@ -97,4 +97,12 @@ public interface IWmsInboundService
      * @return 结果
      */
     public int putAway(Long inboundId, Long itemId, Long locationId);
+
+    /**
+     * 完成入库单（草稿转正式）
+     *
+     * @param inboundId 入库单 ID
+     * @return 结果
+     */
+    public int finishInboundOrder(Long inboundId);
 }

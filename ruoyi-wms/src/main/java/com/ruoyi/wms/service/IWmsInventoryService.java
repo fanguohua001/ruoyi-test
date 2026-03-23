@@ -1,5 +1,6 @@
 package com.ruoyi.wms.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import com.ruoyi.wms.domain.WmsInventory;
 
@@ -29,7 +30,7 @@ public interface IWmsInventoryService
     /**
      * 查询实时库存
      *
-     * @param productId 商品 ID
+     * @param productId 物料 ID
      * @param warehouseId 仓库 ID
      * @return 库存数量
      */
@@ -93,4 +94,30 @@ public interface IWmsInventoryService
      * @return 预警列表
      */
     public List<WmsInventory> checkStockAlert();
+
+    /**
+     * 入库增加库存（带履历记录）
+     *
+     * @param wmsInventory 库存信息
+     * @param qty 数量
+     * @param referenceType 关联单据类型
+     * @param referenceId 关联单据 ID
+     * @param referenceNo 关联单据号
+     * @return 结果
+     */
+    public int increaseStockWithLedger(WmsInventory wmsInventory, BigDecimal qty,
+                                        String referenceType, Long referenceId, String referenceNo);
+
+    /**
+     * 出库减少库存（带履历记录）
+     *
+     * @param wmsInventory 库存信息
+     * @param qty 数量
+     * @param referenceType 关联单据类型
+     * @param referenceId 关联单据 ID
+     * @param referenceNo 关联单据号
+     * @return 结果
+     */
+    public int decreaseStockWithLedger(WmsInventory wmsInventory, BigDecimal qty,
+                                        String referenceType, Long referenceId, String referenceNo);
 }

@@ -98,4 +98,20 @@ public interface WmsOutboundMapper
      * @return 结果
      */
     public int deleteWmsOutboundItemByIds(Long[] itemIds);
+
+    /**
+     * 根据出库单 ID 删除出库明细
+     *
+     * @param outboundId 出库单 ID
+     * @return 结果
+     */
+    public int deleteWmsOutboundItemByOutboundId(Long outboundId);
+
+    /**
+     * 根据明细 ID 查询出库明细
+     *
+     * @param itemId 明细 ID
+     * @return 出库明细信息
+     */
+    public WmsOutboundItem selectWmsOutboundItemByItemId(Long itemId);
 }

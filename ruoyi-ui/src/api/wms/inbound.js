@@ -69,6 +69,22 @@ export function putAway(inboundId, itemId, locationId) {
   })
 }
 
+// 完成入库单
+export function finishInbound(inboundId) {
+  return request({
+    url: '/wms/inbound/finish?inboundId=' + inboundId,
+    method: 'put'
+  })
+}
+
+// 检查入库单是否已完成
+export function checkFinished(inboundId) {
+  return request({
+    url: '/wms/inbound/checkFinished/' + inboundId,
+    method: 'get'
+  })
+}
+
 // 导出入库单
 export function exportInbound(query) {
   return request({

@@ -49,9 +49,8 @@
 
     <el-table v-loading="loading" :data="alertList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="预警 ID" align="center" prop="alertId" />
-      <el-table-column label="商品编码" align="center" prop="productCode" />
-      <el-table-column label="商品名称" align="center" prop="productName" :show-overflow-tooltip="true" />
+      <el-table-column label="物料编码" align="center" prop="productCode" />
+      <el-table-column label="物料名称" align="center" prop="productName" :show-overflow-tooltip="true" />
       <el-table-column label="预警类型" align="center" prop="alertType">
         <template slot-scope="scope">
           <span v-if="scope.row.alertType == '1'">低于安全库存</span>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsStockCheckMapper">
+
+    <resultMap type="WmsStockCheck" id="WmsStockCheckResult">
+        <result property="checkId"    column="check_id"    />
+        <result property="checkNo"    column="check_no"    />
+        <result property="checkType"    column="check_type"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="locationId"    column="location_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="status"    column="status"    />
+        <result property="planDate"    column="plan_date"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="totalQty"    column="total_qty"    />
+        <result property="checkedQty"    column="checked_qty"    />
+        <result property="diffQty"    column="diff_qty"    />
+        <result property="diffAmount"    column="diff_amount"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectStockCheckVo">
+        select check_id, check_no, check_type, warehouse_id, location_id, product_id, status, plan_date, start_time, end_time, total_qty, checked_qty, diff_qty, diff_amount, create_by, create_time, update_by, update_time, remark from wms_stock_check
+    </sql>
+
+    <select id="selectStockCheckList" parameterType="WmsStockCheck" resultMap="WmsStockCheckResult">
+        <include refid="selectStockCheckVo"/>
+        <where>
+            <if test="checkNo != null  and checkNo != ''"> and check_no = #{checkNo}</if>
+            <if test="checkType != null  and checkType != ''"> and check_type = #{checkType}</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="locationId != null "> and location_id = #{locationId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectStockCheckById" parameterType="Long" resultMap="WmsStockCheckResult">
+        <include refid="selectStockCheckVo"/>
+        where check_id = #{checkId}
+    </select>
+
+    <select id="checkCheckNoUnique" parameterType="String" resultMap="WmsStockCheckResult">
+        <include refid="selectStockCheckVo"/>
+        where check_no = #{checkNo}
+    </select>
+
+    <insert id="insertStockCheck" parameterType="WmsStockCheck" useGeneratedKeys="true" keyProperty="checkId">
+        insert into wms_stock_check
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="checkNo != null and checkNo != ''">check_no,</if>
+            <if test="checkType != null">check_type,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="locationId != null">location_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="status != null">status,</if>
+            <if test="planDate != null">plan_date,</if>
+            <if test="totalQty != null">total_qty,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="checkNo != null and checkNo != ''">#{checkNo},</if>
+            <if test="checkType != null">#{checkType},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="locationId != null">#{locationId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="planDate != null">#{planDate},</if>
+            <if test="totalQty != null">#{totalQty},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStockCheck" parameterType="WmsStockCheck">
+        update wms_stock_check
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="checkNo != null and checkNo != ''">check_no = #{checkNo},</if>
+            <if test="checkType != null">check_type = #{checkType},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="locationId != null">location_id = #{locationId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="planDate != null">plan_date = #{planDate},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="totalQty != null">total_qty = #{totalQty},</if>
+            <if test="checkedQty != null">checked_qty = #{checkedQty},</if>
+            <if test="diffQty != null">diff_qty = #{diffQty},</if>
+            <if test="diffAmount != null">diff_amount = #{diffAmount},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where check_id = #{checkId}
+    </update>
+
+    <delete id="deleteStockCheckById" parameterType="Long">
+        delete from wms_stock_check where check_id = #{checkId}
+    </delete>
+
+    <delete id="deleteStockCheckByIds" parameterType="String">
+        delete from wms_stock_check where check_id in
+        <foreach item="checkId" collection="array" open="(" separator="," close=")">
+            #{checkId}
+        </foreach>
+    </delete>
+</mapper>

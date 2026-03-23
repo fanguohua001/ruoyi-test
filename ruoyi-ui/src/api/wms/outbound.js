@@ -76,6 +76,22 @@ export function ship(outboundId) {
   })
 }
 
+// 完成出库单
+export function finishOutbound(outboundId) {
+  return request({
+    url: '/wms/outbound/finish?outboundId=' + outboundId,
+    method: 'put'
+  })
+}
+
+// 检查出库单是否已完成
+export function checkOutboundFinished(outboundId) {
+  return request({
+    url: '/wms/outbound/checkFinished/' + outboundId,
+    method: 'get'
+  })
+}
+
 // 导出出库单
 export function exportOutbound(query) {
   return request({

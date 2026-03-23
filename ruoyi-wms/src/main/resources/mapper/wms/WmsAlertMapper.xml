@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsAlertMapper">
+
+    <resultMap type="WmsAlert" id="WmsAlertResult">
+        <result property="alertId"    column="alert_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="alertType"    column="alert_type"    />
+        <result property="alertLevel"    column="alert_level"    />
+        <result property="qtyOnHand"    column="qty_on_hand"    />
+        <result property="safetyStock"    column="safety_stock"    />
+        <result property="expiryDate"    column="expiry_date"    />
+        <result property="daysUntilExpiry"    column="days_until_expiry"    />
+        <result property="lastMoveDate"    column="last_move_date"    />
+        <result property="status"    column="status"    />
+        <result property="handleBy"    column="handle_by"    />
+        <result property="handleTime"    column="handle_time"    />
+        <result property="handleRemark"    column="handle_remark"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectAlertVo">
+        select alert_id, product_id, product_code, product_name, warehouse_id, alert_type, alert_level, qty_on_hand, safety_stock, expiry_date, days_until_expiry, last_move_date, status, handle_by, handle_time, handle_remark, create_time from wms_alert
+    </sql>
+
+    <select id="selectAlertList" parameterType="WmsAlert" resultMap="WmsAlertResult">
+        <include refid="selectAlertVo"/>
+        <where>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="alertType != null  and alertType != ''"> and alert_type = #{alertType}</if>
+            <if test="alertLevel != null  and alertLevel != ''"> and alert_level = #{alertLevel}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAlertById" parameterType="Long" resultMap="WmsAlertResult">
+        <include refid="selectAlertVo"/>
+        where alert_id = #{alertId}
+    </select>
+
+    <insert id="insertAlert" parameterType="WmsAlert" useGeneratedKeys="true" keyProperty="alertId">
+        insert into wms_alert
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="productCode != null">product_code,</if>
+            <if test="productName != null">product_name,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="alertType != null">alert_type,</if>
+            <if test="alertLevel != null">alert_level,</if>
+            <if test="qtyOnHand != null">qty_on_hand,</if>
+            <if test="safetyStock != null">safety_stock,</if>
+            <if test="expiryDate != null">expiry_date,</if>
+            <if test="daysUntilExpiry != null">days_until_expiry,</if>
+            <if test="lastMoveDate != null">last_move_date,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="productCode != null">#{productCode},</if>
+            <if test="productName != null">#{productName},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="alertType != null">#{alertType},</if>
+            <if test="alertLevel != null">#{alertLevel},</if>
+            <if test="qtyOnHand != null">#{qtyOnHand},</if>
+            <if test="safetyStock != null">#{safetyStock},</if>
+            <if test="expiryDate != null">#{expiryDate},</if>
+            <if test="daysUntilExpiry != null">#{daysUntilExpiry},</if>
+            <if test="lastMoveDate != null">#{lastMoveDate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAlert" parameterType="WmsAlert">
+        update wms_alert
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="alertType != null">alert_type = #{alertType},</if>
+            <if test="alertLevel != null">alert_level = #{alertLevel},</if>
+            <if test="qtyOnHand != null">qty_on_hand = #{qtyOnHand},</if>
+            <if test="safetyStock != null">safety_stock = #{safetyStock},</if>
+            <if test="expiryDate != null">expiry_date = #{expiryDate},</if>
+            <if test="daysUntilExpiry != null">days_until_expiry = #{daysUntilExpiry},</if>
+            <if test="lastMoveDate != null">last_move_date = #{lastMoveDate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="handleBy != null">handle_by = #{handleBy},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+            <if test="handleRemark != null">handle_remark = #{handleRemark},</if>
+        </trim>
+        where alert_id = #{alertId}
+    </update>
+
+    <delete id="deleteAlertById" parameterType="Long">
+        delete from wms_alert where alert_id = #{alertId}
+    </delete>
+
+    <delete id="deleteAlertByIds" parameterType="String">
+        delete from wms_alert where alert_id in
+        <foreach item="alertId" collection="array" open="(" separator="," close=")">
+            #{alertId}
+        </foreach>
+    </delete>
+</mapper>

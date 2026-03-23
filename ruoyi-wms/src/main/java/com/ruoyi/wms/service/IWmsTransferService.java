@@ -70,7 +70,7 @@ public interface IWmsTransferService
      * 执行移库
      *
      * @param transferId 移库单 ID
-     * @param productId 商品 ID
+     * @param productId 物料 ID
      * @param qty 移库数量
      * @return 结果
      */

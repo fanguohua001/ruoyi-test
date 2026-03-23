@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsInboundMapper">
+
+    <resultMap type="WmsInboundOrder" id="WmsInboundOrderResult">
+        <result property="inboundId"    column="inbound_id"    />
+        <result property="inboundNo"    column="inbound_no"    />
+        <result property="inboundType"    column="inbound_type"    />
+        <result property="sourceType"    column="source_type"    />
+        <result property="sourceNo"    column="source_no"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="status"    column="status"    />
+        <result property="isFinished"    column="is_finished"    />
+        <result property="totalQty"    column="total_qty"    />
+        <result property="receivedQty"    column="received_qty"    />
+        <result property="qualifiedQty"    column="qualified_qty"    />
+        <result property="unqualifiedQty"    column="unqualified_qty"    />
+        <result property="expectedDate"    column="expected_date"    />
+        <result property="actualDate"    column="actual_date"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap type="WmsInboundItem" id="WmsInboundItemResult">
+        <result property="itemId"    column="item_id"    />
+        <result property="inboundId"    column="inbound_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="expectedQty"    column="expected_qty"    />
+        <result property="receivedQty"    column="received_qty"    />
+        <result property="qualifiedQty"    column="qualified_qty"    />
+        <result property="unqualifiedQty"    column="unqualified_qty"    />
+        <result property="unit"    column="unit"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="productionDate"    column="production_date"    />
+        <result property="expiryDate"    column="expiry_date"    />
+        <result property="locationId"    column="location_id"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectInboundOrderVo">
+        select inbound_id, inbound_no, inbound_type, source_type, source_no, supplier_id, supplier_name, warehouse_id, status, is_finished, total_qty, received_qty, qualified_qty, unqualified_qty, expected_date, actual_date, create_by, create_time, update_by, update_time, remark from wms_inbound_order
+    </sql>
+
+    <select id="selectInboundOrderList" parameterType="WmsInboundOrder" resultMap="WmsInboundOrderResult">
+        <include refid="selectInboundOrderVo"/>
+        <where>
+            <if test="inboundNo != null  and inboundNo != ''"> and inbound_no = #{inboundNo}</if>
+            <if test="inboundType != null  and inboundType != ''"> and inbound_type = #{inboundType}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectInboundOrderById" parameterType="Long" resultMap="WmsInboundOrderResult">
+        <include refid="selectInboundOrderVo"/>
+        where inbound_id = #{inboundId}
+    </select>
+
+    <select id="checkInboundNoUnique" parameterType="String" resultMap="WmsInboundOrderResult">
+        <include refid="selectInboundOrderVo"/>
+        where inbound_no = #{inboundNo}
+    </select>
+
+    <select id="selectWmsInboundItemByInboundId" parameterType="Long" resultMap="WmsInboundItemResult">
+        select item_id, inbound_id, product_id, product_code, product_name, expected_qty, received_qty, qualified_qty, unqualified_qty, unit, batch_no, production_date, expiry_date, location_id, status, create_by, create_time, update_by, update_time, remark from wms_inbound_item where inbound_id = #{inboundId}
+    </select>
+
+    <select id="selectWmsInboundItemByItemId" parameterType="Long" resultMap="WmsInboundItemResult">
+        select item_id, inbound_id, product_id, product_code, product_name, expected_qty, received_qty, qualified_qty, unqualified_qty, unit, batch_no, production_date, expiry_date, location_id, status, create_by, create_time, update_by, update_time, remark from wms_inbound_item where item_id = #{itemId}
+    </select>
+
+    <insert id="insertInboundOrder" parameterType="WmsInboundOrder" useGeneratedKeys="true" keyProperty="inboundId">
+        insert into wms_inbound_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="inboundNo != null and inboundNo != ''">inbound_no,</if>
+            <if test="inboundType != null">inbound_type,</if>
+            <if test="sourceType != null">source_type,</if>
+            <if test="sourceNo != null">source_no,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="supplierName != null">supplier_name,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="status != null">status,</if>
+            <if test="isFinished != null">is_finished,</if>
+            <if test="totalQty != null">total_qty,</if>
+            <if test="expectedDate != null">expected_date,</if>
+            <if test="actualDate != null">actual_date,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="inboundNo != null and inboundNo != ''">#{inboundNo},</if>
+            <if test="inboundType != null">#{inboundType},</if>
+            <if test="sourceType != null">#{sourceType},</if>
+            <if test="sourceNo != null">#{sourceNo},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="isFinished != null">#{isFinished},</if>
+            <if test="totalQty != null">#{totalQty},</if>
+            <if test="expectedDate != null">#{expectedDate},</if>
+            <if test="actualDate != null">#{actualDate},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInboundOrder" parameterType="WmsInboundOrder">
+        update wms_inbound_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="inboundNo != null and inboundNo != ''">inbound_no = #{inboundNo},</if>
+            <if test="inboundType != null">inbound_type = #{inboundType},</if>
+            <if test="sourceType != null">source_type = #{sourceType},</if>
+            <if test="sourceNo != null">source_no = #{sourceNo},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="isFinished != null">is_finished = #{isFinished},</if>
+            <if test="totalQty != null">total_qty = #{totalQty},</if>
+            <if test="receivedQty != null">received_qty = #{receivedQty},</if>
+            <if test="qualifiedQty != null">qualified_qty = #{qualifiedQty},</if>
+            <if test="unqualifiedQty != null">unqualified_qty = #{unqualifiedQty},</if>
+            <if test="expectedDate != null">expected_date = #{expectedDate},</if>
+            <if test="actualDate != null">actual_date = #{actualDate},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where inbound_id = #{inboundId}
+    </update>
+
+    <delete id="deleteInboundOrderById" parameterType="Long">
+        delete from wms_inbound_order where inbound_id = #{inboundId}
+    </delete>
+
+    <delete id="deleteInboundOrderByIds" parameterType="String">
+        delete from wms_inbound_order where inbound_id in
+        <foreach item="inboundId" collection="array" open="(" separator="," close=")">
+            #{inboundId}
+        </foreach>
+    </delete>
+
+    <insert id="insertWmsInboundItem" parameterType="WmsInboundItem" useGeneratedKeys="true" keyProperty="itemId">
+        insert into wms_inbound_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="inboundId != null">inbound_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="productCode != null">product_code,</if>
+            <if test="productName != null">product_name,</if>
+            <if test="expectedQty != null">expected_qty,</if>
+            <if test="unit != null">unit,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="productionDate != null">production_date,</if>
+            <if test="expiryDate != null">expiry_date,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="inboundId != null">#{inboundId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="productCode != null">#{productCode},</if>
+            <if test="productName != null">#{productName},</if>
+            <if test="expectedQty != null">#{expectedQty},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="productionDate != null">#{productionDate},</if>
+            <if test="expiryDate != null">#{expiryDate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsInboundItem" parameterType="WmsInboundItem">
+        update wms_inbound_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="receivedQty != null">received_qty = #{receivedQty},</if>
+            <if test="qualifiedQty != null">qualified_qty = #{qualifiedQty},</if>
+            <if test="unqualifiedQty != null">unqualified_qty = #{unqualifiedQty},</if>
+            <if test="locationId != null">location_id = #{locationId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where item_id = #{itemId}
+    </update>
+
+    <delete id="deleteWmsInboundItemByIds" parameterType="String">
+        delete from wms_inbound_item where item_id in
+        <foreach item="itemId" collection="array" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteWmsInboundItemByInboundId" parameterType="Long">
+        delete from wms_inbound_item where inbound_id = #{inboundId}
+    </delete>
+</mapper>

@@ -33,6 +33,30 @@ public class WmsLocation extends BaseEntity
     @Size(min = 0, max = 200, message = "库位名称长度不能超过 200 个字符")
     private String locationName;
 
+    /** 仓库 ID */
+    @Excel(name = "仓库 ID", cellType = Excel.ColumnType.NUMERIC)
+    private Long warehouseId;
+
+    /** 仓库编码 */
+    @Excel(name = "仓库编码")
+    private String warehouseCode;
+
+    /** 仓库名称 */
+    @Excel(name = "仓库名称")
+    private String warehouseName;
+
+    /** 库区 ID */
+    @Excel(name = "库区 ID", cellType = Excel.ColumnType.NUMERIC)
+    private Long zoneId;
+
+    /** 库区编码 */
+    @Excel(name = "库区编码")
+    private String zoneCode;
+
+    /** 库区名称 */
+    @Excel(name = "库区名称")
+    private String zoneName;
+
     /** 库位类型（1 存储位 2 拣货位 3 暂存位） */
     @Excel(name = "库位类型", readConverterExp = "1=存储位，2=拣货位，3=暂存位")
     private String locationType;
@@ -61,8 +85,8 @@ public class WmsLocation extends BaseEntity
     @Excel(name = "最大体积")
     private BigDecimal maxVolume;
 
-    /** 状态（0 禁用 1 启用 2 占用 3 锁定） */
-    @Excel(name = "状态", readConverterExp = "0=禁用，1=启用，2=占用，3=锁定")
+    /** 状态（0 正常 1 停用 2 占用 3 锁定） */
+    @Excel(name = "状态", readConverterExp = "0=正常，1=停用，2=占用，3=锁定")
     private String status;
 
     public Long getLocationId()
@@ -93,6 +117,66 @@ public class WmsLocation extends BaseEntity
     public void setLocationName(String locationName)
     {
         this.locationName = locationName;
+    }
+
+    public Long getWarehouseId()
+    {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Long warehouseId)
+    {
+        this.warehouseId = warehouseId;
+    }
+
+    public String getWarehouseCode()
+    {
+        return warehouseCode;
+    }
+
+    public void setWarehouseCode(String warehouseCode)
+    {
+        this.warehouseCode = warehouseCode;
+    }
+
+    public String getWarehouseName()
+    {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName)
+    {
+        this.warehouseName = warehouseName;
+    }
+
+    public Long getZoneId()
+    {
+        return zoneId;
+    }
+
+    public void setZoneId(Long zoneId)
+    {
+        this.zoneId = zoneId;
+    }
+
+    public String getZoneCode()
+    {
+        return zoneCode;
+    }
+
+    public void setZoneCode(String zoneCode)
+    {
+        this.zoneCode = zoneCode;
+    }
+
+    public String getZoneName()
+    {
+        return zoneName;
+    }
+
+    public void setZoneName(String zoneName)
+    {
+        this.zoneName = zoneName;
     }
 
     public String getLocationType()
@@ -181,6 +265,12 @@ public class WmsLocation extends BaseEntity
             .append("locationId", getLocationId())
             .append("locationCode", getLocationCode())
             .append("locationName", getLocationName())
+            .append("warehouseId", getWarehouseId())
+            .append("warehouseCode", getWarehouseCode())
+            .append("warehouseName", getWarehouseName())
+            .append("zoneId", getZoneId())
+            .append("zoneCode", getZoneCode())
+            .append("zoneName", getZoneName())
             .append("locationType", getLocationType())
             .append("areaCode", getAreaCode())
             .append("rowNo", getRowNo())

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsInventoryMapper">
+
+    <resultMap type="WmsInventory" id="WmsInventoryResult">
+        <result property="inventoryId"    column="inventory_id"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="locationId"    column="location_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="productionDate"    column="production_date"    />
+        <result property="expiryDate"    column="expiry_date"    />
+        <result property="serialNo"    column="serial_no"    />
+        <result property="qtyOnHand"    column="qty_on_hand"    />
+        <result property="qtyAvailable"    column="qty_available"    />
+        <result property="qtyLocked"    column="qty_locked"    />
+        <result property="qtyDamaged"    column="qty_damaged"    />
+        <result property="unitCost"    column="unit_cost"    />
+        <result property="totalCost"    column="total_cost"    />
+        <result property="status"    column="status"    />
+        <result property="lastStockCheckDate"    column="last_stock_check_date"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectInventoryVo">
+        select inventory_id, warehouse_id, location_id, product_id, product_code, product_name, batch_no, production_date, expiry_date, serial_no, qty_on_hand, qty_available, qty_locked, qty_damaged, unit_cost, total_cost, status, last_stock_check_date, create_by, create_time, update_by, update_time, remark from wms_inventory
+    </sql>
+
+    <select id="selectInventoryList" parameterType="WmsInventory" resultMap="WmsInventoryResult">
+        <include refid="selectInventoryVo"/>
+        <where>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="locationId != null "> and location_id = #{locationId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectInventoryById" parameterType="Long" resultMap="WmsInventoryResult">
+        <include refid="selectInventoryVo"/>
+        where inventory_id = #{inventoryId}
+    </select>
+
+    <select id="selectInventoryByParams" resultMap="WmsInventoryResult">
+        <include refid="selectInventoryVo"/>
+        <where>
+            <if test="param1 != null"> and product_id = #{param1}</if>
+            <if test="param2 != null"> and warehouse_id = #{param2}</if>
+            <if test="param3 != null"> and location_id = #{param3}</if>
+            <if test="param4 != null and param4 != ''"> and batch_no = #{param4}</if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="selectQtyByProduct" resultType="java.math.BigDecimal">
+        select IFNULL(sum(qty_available), 0) from wms_inventory
+        <where>
+            <if test="param1 != null"> and product_id = #{param1}</if>
+            <if test="param2 != null"> and warehouse_id = #{param2}</if>
+            and status = '1'
+        </where>
+    </select>
+
+    <select id="selectInventoryLowStock" resultMap="WmsInventoryResult">
+        select i.* from wms_inventory i
+        left join wms_product p on i.product_id = p.product_id
+        where p.safety_stock is not null and i.qty_available &lt; p.safety_stock
+    </select>
+
+    <insert id="insertInventory" parameterType="WmsInventory" useGeneratedKeys="true" keyProperty="inventoryId">
+        insert into wms_inventory
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="locationId != null">location_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="productCode != null">product_code,</if>
+            <if test="productName != null">product_name,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="productionDate != null">production_date,</if>
+            <if test="expiryDate != null">expiry_date,</if>
+            <if test="serialNo != null">serial_no,</if>
+            <if test="qtyOnHand != null">qty_on_hand,</if>
+            <if test="qtyAvailable != null">qty_available,</if>
+            <if test="qtyLocked != null">qty_locked,</if>
+            <if test="qtyDamaged != null">qty_damaged,</if>
+            <if test="unitCost != null">unit_cost,</if>
+            <if test="totalCost != null">total_cost,</if>
+            <if test="status != null">status,</if>
+            <if test="lastStockCheckDate != null">last_stock_check_date,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="locationId != null">#{locationId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="productCode != null">#{productCode},</if>
+            <if test="productName != null">#{productName},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="productionDate != null">#{productionDate},</if>
+            <if test="expiryDate != null">#{expiryDate},</if>
+            <if test="serialNo != null">#{serialNo},</if>
+            <if test="qtyOnHand != null">#{qtyOnHand},</if>
+            <if test="qtyAvailable != null">#{qtyAvailable},</if>
+            <if test="qtyLocked != null">#{qtyLocked},</if>
+            <if test="qtyDamaged != null">#{qtyDamaged},</if>
+            <if test="unitCost != null">#{unitCost},</if>
+            <if test="totalCost != null">#{totalCost},</if>
+            <if test="status != null">#{status},</if>
+            <if test="lastStockCheckDate != null">#{lastStockCheckDate},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInventory" parameterType="WmsInventory">
+        update wms_inventory
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="locationId != null">location_id = #{locationId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="productionDate != null">production_date = #{productionDate},</if>
+            <if test="expiryDate != null">expiry_date = #{expiryDate},</if>
+            <if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="qtyOnHand != null">qty_on_hand = #{qtyOnHand},</if>
+            <if test="qtyAvailable != null">qty_available = #{qtyAvailable},</if>
+            <if test="qtyLocked != null">qty_locked = #{qtyLocked},</if>
+            <if test="qtyDamaged != null">qty_damaged = #{qtyDamaged},</if>
+            <if test="unitCost != null">unit_cost = #{unitCost},</if>
+            <if test="totalCost != null">total_cost = #{totalCost},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="lastStockCheckDate != null">last_stock_check_date = #{lastStockCheckDate},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where inventory_id = #{inventoryId}
+    </update>
+
+    <delete id="deleteInventoryById" parameterType="Long">
+        delete from wms_inventory where inventory_id = #{inventoryId}
+    </delete>
+
+    <delete id="deleteInventoryByIds" parameterType="String">
+        delete from wms_inventory where inventory_id in
+        <foreach item="inventoryId" collection="array" open="(" separator="," close=")">
+            #{inventoryId}
+        </foreach>
+    </delete>
+
+    <update id="increaseInventory" parameterType="WmsInventory">
+        update wms_inventory
+        set qty_on_hand = qty_on_hand + #{qtyOnHand},
+            qty_available = qty_available + #{qtyAvailable},
+            update_time = now()
+        where inventory_id = #{inventoryId}
+    </update>
+
+    <update id="decreaseInventory" parameterType="WmsInventory">
+        update wms_inventory
+        set qty_on_hand = qty_on_hand - #{qtyOnHand},
+            qty_available = qty_available - #{qtyAvailable},
+            update_time = now()
+        where inventory_id = #{inventoryId}
+    </update>
+</mapper>

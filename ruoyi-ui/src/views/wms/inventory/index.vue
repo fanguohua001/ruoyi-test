@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="商品编码" prop="productCode">
+      <el-form-item label="物料编码" prop="productCode">
         <el-input
           v-model="queryParams.productCode"
-          placeholder="请输入商品编码"
+          placeholder="请输入物料编码"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="商品名称" prop="productName">
+      <el-form-item label="物料名称" prop="productName">
         <el-input
           v-model="queryParams.productName"
-          placeholder="请输入商品名称"
+          placeholder="请输入物料名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -54,9 +54,8 @@
 
     <el-table v-loading="loading" :data="inventoryList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="库存 ID" align="center" prop="inventoryId" />
-      <el-table-column label="商品编码" align="center" prop="productCode" />
-      <el-table-column label="商品名称" align="center" prop="productName" :show-overflow-tooltip="true" />
+      <el-table-column label="物料编码" align="center" prop="productCode" />
+      <el-table-column label="物料名称" align="center" prop="productName" :show-overflow-tooltip="true" />
       <el-table-column label="批次号" align="center" prop="batchNo" />
       <el-table-column label="有效期至" align="center" prop="expiryDate" width="180">
         <template slot-scope="scope">

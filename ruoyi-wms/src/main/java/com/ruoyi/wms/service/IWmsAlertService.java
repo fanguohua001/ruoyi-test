@@ -76,7 +76,7 @@ public interface IWmsAlertService
     public int generateAlerts();
 
     /**
-     * 检查近效期商品
+     * 检查近效期物料
      *
      * @param days 天数
      * @return 结果

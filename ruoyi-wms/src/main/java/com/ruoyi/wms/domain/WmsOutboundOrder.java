@@ -1,6 +1,7 @@
 package com.ruoyi.wms.domain;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -45,9 +46,13 @@ public class WmsOutboundOrder extends BaseEntity
     @Excel(name = "仓库 ID", cellType = Excel.ColumnType.NUMERIC)
     private Long warehouseId;
 
-    /** 状态（0 草稿 1 待审核 2 待拣货 3 拣货中 4 待复核 5 待打包 6 待发货 7 已发货 8 已完成 9 已取消） */
-    @Excel(name = "状态", readConverterExp = "0=草稿，1=待审核，2=待拣货，3=拣货中，4=待复核，5=待打包，6=待发货，7=已发货，8=已完成，9=已取消")
+    /** 状态（0 无 1 待审核 2 待拣货 3 拣货中 4 待复核 5 待打包 6 待发货 7 已发货 8 已取消） */
+    @Excel(name = "状态", readConverterExp = "0=无，1=待审核，2=待拣货，3=拣货中，4=待复核，5=待打包，6=待发货，7=已发货，8=已取消")
     private String status;
+
+    /** 是否完成（0 草稿 1 已完成） */
+    @Excel(name = "是否完成", readConverterExp = "0=草稿，1=已完成")
+    private Integer isFinished;
 
     /** 优先级（1 普通 2 加急 3 特急） */
     @Excel(name = "优先级", readConverterExp = "1=普通，2=加急，3=特急")
@@ -78,6 +83,9 @@ public class WmsOutboundOrder extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "实际发货日期", width = 30, dateFormat = "yyyy-MM-dd")
     private Date actualDate;
+
+    /** 出库明细列表 */
+    private List<WmsOutboundItem> items;
 
     public Long getOutboundId()
     {
@@ -229,6 +237,26 @@ public class WmsOutboundOrder extends BaseEntity
         this.actualDate = actualDate;
     }
 
+    public List<WmsOutboundItem> getItems()
+    {
+        return items;
+    }
+
+    public void setItems(List<WmsOutboundItem> items)
+    {
+        this.items = items;
+    }
+
+    public Integer getIsFinished()
+    {
+        return isFinished;
+    }
+
+    public void setIsFinished(Integer isFinished)
+    {
+        this.isFinished = isFinished;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -240,6 +268,7 @@ public class WmsOutboundOrder extends BaseEntity
             .append("customerName", getCustomerName())
             .append("warehouseId", getWarehouseId())
             .append("status", getStatus())
+            .append("isFinished", getIsFinished())
             .append("priority", getPriority())
             .append("waveNo", getWaveNo())
             .append("totalQty", getTotalQty())

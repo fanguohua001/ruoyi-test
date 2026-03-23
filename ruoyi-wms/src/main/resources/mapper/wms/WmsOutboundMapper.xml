@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsOutboundMapper">
+
+    <resultMap type="WmsOutboundOrder" id="WmsOutboundOrderResult">
+        <result property="outboundId"    column="outbound_id"    />
+        <result property="outboundNo"    column="outbound_no"    />
+        <result property="outboundType"    column="outbound_type"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="customerName"    column="customer_name"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="status"    column="status"    />
+        <result property="isFinished"    column="is_finished"    />
+        <result property="priority"    column="priority"    />
+        <result property="waveNo"    column="wave_no"    />
+        <result property="totalQty"    column="total_qty"    />
+        <result property="pickedQty"    column="picked_qty"    />
+        <result property="shippedQty"    column="shipped_qty"    />
+        <result property="expectedDate"    column="expected_date"    />
+        <result property="actualDate"    column="actual_date"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap type="WmsOutboundItem" id="WmsOutboundItemResult">
+        <result property="itemId"    column="item_id"    />
+        <result property="outboundId"    column="outbound_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="orderQty"    column="order_qty"    />
+        <result property="pickedQty"    column="picked_qty"    />
+        <result property="shippedQty"    column="shipped_qty"    />
+        <result property="unit"    column="unit"    />
+        <result property="pickingStrategy"    column="picking_strategy"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectOutboundOrderVo">
+        select outbound_id, outbound_no, outbound_type, order_no, customer_id, customer_name, warehouse_id, status, is_finished, priority, wave_no, total_qty, picked_qty, shipped_qty, expected_date, actual_date, create_by, create_time, update_by, update_time, remark from wms_outbound_order
+    </sql>
+
+    <select id="selectOutboundOrderList" parameterType="WmsOutboundOrder" resultMap="WmsOutboundOrderResult">
+        <include refid="selectOutboundOrderVo"/>
+        <where>
+            <if test="outboundNo != null  and outboundNo != ''"> and outbound_no = #{outboundNo}</if>
+            <if test="outboundType != null  and outboundType != ''"> and outbound_type = #{outboundType}</if>
+            <if test="orderNo != null  and orderNo != ''"> and order_no = #{orderNo}</if>
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="customerName != null  and customerName != ''"> and customer_name like concat('%', #{customerName}, '%')</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="priority != null  and priority != ''"> and priority = #{priority}</if>
+            <if test="waveNo != null  and waveNo != ''"> and wave_no = #{waveNo}</if>
+        </where>
+    </select>
+
+    <select id="selectOutboundOrderById" parameterType="Long" resultMap="WmsOutboundOrderResult">
+        <include refid="selectOutboundOrderVo"/>
+        where outbound_id = #{outboundId}
+    </select>
+
+    <select id="checkOutboundNoUnique" parameterType="String" resultMap="WmsOutboundOrderResult">
+        <include refid="selectOutboundOrderVo"/>
+        where outbound_no = #{outboundNo}
+    </select>
+
+    <select id="selectWmsOutboundItemByOutboundId" parameterType="Long" resultMap="WmsOutboundItemResult">
+        select item_id, outbound_id, product_id, product_code, product_name, order_qty, picked_qty, shipped_qty, unit, picking_strategy, create_by, create_time, update_by, update_time, remark from wms_outbound_item where outbound_id = #{outboundId}
+    </select>
+
+    <select id="selectWmsOutboundItemByItemId" parameterType="Long" resultMap="WmsOutboundItemResult">
+        select item_id, outbound_id, product_id, product_code, product_name, order_qty, picked_qty, shipped_qty, unit, picking_strategy, create_by, create_time, update_by, update_time, remark from wms_outbound_item where item_id = #{itemId}
+    </select>
+
+    <insert id="insertOutboundOrder" parameterType="WmsOutboundOrder" useGeneratedKeys="true" keyProperty="outboundId">
+        insert into wms_outbound_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="outboundNo != null and outboundNo != ''">outbound_no,</if>
+            <if test="outboundType != null">outbound_type,</if>
+            <if test="orderNo != null">order_no,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="customerName != null">customer_name,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="status != null">status,</if>
+            <if test="isFinished != null">is_finished,</if>
+            <if test="priority != null">priority,</if>
+            <if test="waveNo != null">wave_no,</if>
+            <if test="totalQty != null">total_qty,</if>
+            <if test="expectedDate != null">expected_date,</if>
+            <if test="actualDate != null">actual_date,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="outboundNo != null and outboundNo != ''">#{outboundNo},</if>
+            <if test="outboundType != null">#{outboundType},</if>
+            <if test="orderNo != null">#{orderNo},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="customerName != null">#{customerName},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="isFinished != null">#{isFinished},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="waveNo != null">#{waveNo},</if>
+            <if test="totalQty != null">#{totalQty},</if>
+            <if test="expectedDate != null">#{expectedDate},</if>
+            <if test="actualDate != null">#{actualDate},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOutboundOrder" parameterType="WmsOutboundOrder">
+        update wms_outbound_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="outboundNo != null and outboundNo != ''">outbound_no = #{outboundNo},</if>
+            <if test="outboundType != null">outbound_type = #{outboundType},</if>
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="customerName != null">customer_name = #{customerName},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="isFinished != null">is_finished = #{isFinished},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="waveNo != null">wave_no = #{waveNo},</if>
+            <if test="totalQty != null">total_qty = #{totalQty},</if>
+            <if test="pickedQty != null">picked_qty = #{pickedQty},</if>
+            <if test="shippedQty != null">shipped_qty = #{shippedQty},</if>
+            <if test="expectedDate != null">expected_date = #{expectedDate},</if>
+            <if test="actualDate != null">actual_date = #{actualDate},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where outbound_id = #{outboundId}
+    </update>
+
+    <delete id="deleteOutboundOrderById" parameterType="Long">
+        delete from wms_outbound_order where outbound_id = #{outboundId}
+    </delete>
+
+    <delete id="deleteOutboundOrderByIds" parameterType="String">
+        delete from wms_outbound_order where outbound_id in
+        <foreach item="outboundId" collection="array" open="(" separator="," close=")">
+            #{outboundId}
+        </foreach>
+    </delete>
+
+    <insert id="insertWmsOutboundItem" parameterType="WmsOutboundItem" useGeneratedKeys="true" keyProperty="itemId">
+        insert into wms_outbound_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="outboundId != null">outbound_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="productCode != null">product_code,</if>
+            <if test="productName != null">product_name,</if>
+            <if test="orderQty != null">order_qty,</if>
+            <if test="unit != null">unit,</if>
+            <if test="pickingStrategy != null">picking_strategy,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="outboundId != null">#{outboundId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="productCode != null">#{productCode},</if>
+            <if test="productName != null">#{productName},</if>
+            <if test="orderQty != null">#{orderQty},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="pickingStrategy != null">#{pickingStrategy},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsOutboundItem" parameterType="WmsOutboundItem">
+        update wms_outbound_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pickedQty != null">picked_qty = #{pickedQty},</if>
+            <if test="shippedQty != null">shipped_qty = #{shippedQty},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where item_id = #{itemId}
+    </update>
+
+    <delete id="deleteWmsOutboundItemByIds" parameterType="String">
+        delete from wms_outbound_item where item_id in
+        <foreach item="itemId" collection="array" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteWmsOutboundItemByOutboundId" parameterType="Long">
+        delete from wms_outbound_item where outbound_id = #{outboundId}
+    </delete>
+</mapper>

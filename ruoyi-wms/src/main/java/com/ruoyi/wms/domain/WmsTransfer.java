@@ -38,6 +38,26 @@ public class WmsTransfer extends BaseEntity
     @Excel(name = "状态", readConverterExp = "0=草稿，1=待执行，2=已完成，3=已取消")
     private String status;
 
+    /** 物料 ID */
+    @Excel(name = "物料 ID", cellType = Excel.ColumnType.NUMERIC)
+    private Long productId;
+
+    /** 物料编码 */
+    @Excel(name = "物料编码")
+    private String productCode;
+
+    /** 物料名称 */
+    @Excel(name = "物料名称")
+    private String productName;
+
+    /** 移库数量 */
+    @Excel(name = "移库数量")
+    private java.math.BigDecimal qty;
+
+    /** 备注 */
+    @Excel(name = "备注")
+    private String remark;
+
     public Long getTransferId()
     {
         return transferId;
@@ -98,6 +118,56 @@ public class WmsTransfer extends BaseEntity
         this.status = status;
     }
 
+    public Long getProductId()
+    {
+        return productId;
+    }
+
+    public void setProductId(Long productId)
+    {
+        this.productId = productId;
+    }
+
+    public String getProductCode()
+    {
+        return productCode;
+    }
+
+    public void setProductCode(String productCode)
+    {
+        this.productCode = productCode;
+    }
+
+    public String getProductName()
+    {
+        return productName;
+    }
+
+    public void setProductName(String productName)
+    {
+        this.productName = productName;
+    }
+
+    public java.math.BigDecimal getQty()
+    {
+        return qty;
+    }
+
+    public void setQty(java.math.BigDecimal qty)
+    {
+        this.qty = qty;
+    }
+
+    public String getRemark()
+    {
+        return remark;
+    }
+
+    public void setRemark(String remark)
+    {
+        this.remark = remark;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -106,6 +176,9 @@ public class WmsTransfer extends BaseEntity
             .append("warehouseId", getWarehouseId())
             .append("fromLocationId", getFromLocationId())
             .append("toLocationId", getToLocationId())
+            .append("productId", getProductId())
+            .append("productName", getProductName())
+            .append("qty", getQty())
             .append("status", getStatus())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())

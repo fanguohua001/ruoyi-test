@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsInventoryLedgerMapper">
+
+    <resultMap type="WmsInventoryLedger" id="WmsInventoryLedgerResult">
+        <result property="ledgerId"    column="ledger_id"    />
+        <result property="transactionNo"    column="transaction_no"    />
+        <result property="transactionType"    column="transaction_type"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="locationId"    column="location_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productCode"    column="product_code"    />
+        <result property="productName"    column="product_name"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="qtyBefore"    column="qty_before"    />
+        <result property="qtyChange"    column="qty_change"    />
+        <result property="qtyAfter"    column="qty_after"    />
+        <result property="unitCost"    column="unit_cost"    />
+        <result property="referenceType"    column="reference_type"    />
+        <result property="referenceId"    column="reference_id"    />
+        <result property="referenceNo"    column="reference_no"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWmsInventoryLedgerVo">
+        select ledger_id, transaction_no, transaction_type, warehouse_id, location_id, product_id, product_code, product_name, batch_no, qty_before, qty_change, qty_after, unit_cost, reference_type, reference_id, reference_no, create_by, create_time, remark from wms_inventory_ledger
+    </sql>
+
+    <select id="selectWmsInventoryLedgerList" parameterType="WmsInventoryLedger" resultMap="WmsInventoryLedgerResult">
+        <include refid="selectWmsInventoryLedgerVo"/>
+        <where>
+            <if test="transactionNo != null  and transactionNo != ''"> and transaction_no = #{transactionNo}</if>
+            <if test="transactionType != null  and transactionType != ''"> and transaction_type = #{transactionType}</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="locationId != null "> and location_id = #{locationId}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productCode != null  and productCode != ''"> and product_code = #{productCode}</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="referenceType != null  and referenceType != ''"> and reference_type = #{referenceType}</if>
+            <if test="referenceId != null "> and reference_id = #{referenceId}</if>
+            <if test="referenceNo != null  and referenceNo != ''"> and reference_no = #{referenceNo}</if>
+        </where>
+    </select>
+
+    <select id="selectWmsInventoryLedgerById" parameterType="Long" resultMap="WmsInventoryLedgerResult">
+        <include refid="selectWmsInventoryLedgerVo"/>
+        where ledger_id = #{ledgerId}
+    </select>
+
+    <insert id="insertWmsInventoryLedger" parameterType="WmsInventoryLedger" useGeneratedKeys="true" keyProperty="ledgerId">
+        insert into wms_inventory_ledger
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="transactionNo != null and transactionNo != ''">transaction_no,</if>
+            <if test="transactionType != null">transaction_type,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="locationId != null">location_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="productCode != null">product_code,</if>
+            <if test="productName != null">product_name,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="qtyBefore != null">qty_before,</if>
+            <if test="qtyChange != null">qty_change,</if>
+            <if test="qtyAfter != null">qty_after,</if>
+            <if test="unitCost != null">unit_cost,</if>
+            <if test="referenceType != null">reference_type,</if>
+            <if test="referenceId != null">reference_id,</if>
+            <if test="referenceNo != null">reference_no,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="transactionNo != null and transactionNo != ''">#{transactionNo},</if>
+            <if test="transactionType != null">#{transactionType},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="locationId != null">#{locationId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="productCode != null">#{productCode},</if>
+            <if test="productName != null">#{productName},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="qtyBefore != null">#{qtyBefore},</if>
+            <if test="qtyChange != null">#{qtyChange},</if>
+            <if test="qtyAfter != null">#{qtyAfter},</if>
+            <if test="unitCost != null">#{unitCost},</if>
+            <if test="referenceType != null">#{referenceType},</if>
+            <if test="referenceId != null">#{referenceId},</if>
+            <if test="referenceNo != null">#{referenceNo},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsInventoryLedger" parameterType="WmsInventoryLedger">
+        update wms_inventory_ledger
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="transactionNo != null and transactionNo != ''">transaction_no = #{transactionNo},</if>
+            <if test="transactionType != null">transaction_type = #{transactionType},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="locationId != null">location_id = #{locationId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="qtyBefore != null">qty_before = #{qtyBefore},</if>
+            <if test="qtyChange != null">qty_change = #{qtyChange},</if>
+            <if test="qtyAfter != null">qty_after = #{qtyAfter},</if>
+            <if test="unitCost != null">unit_cost = #{unitCost},</if>
+            <if test="referenceType != null">reference_type = #{referenceType},</if>
+            <if test="referenceId != null">reference_id = #{referenceId},</if>
+            <if test="referenceNo != null">reference_no = #{referenceNo},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where ledger_id = #{ledgerId}
+    </update>
+
+    <delete id="deleteWmsInventoryLedgerById" parameterType="Long">
+        delete from wms_inventory_ledger where ledger_id = #{ledgerId}
+    </delete>
+
+    <delete id="deleteWmsInventoryLedgerByIds" parameterType="String">
+        delete from wms_inventory_ledger where ledger_id in
+        <foreach item="ledgerId" collection="array" open="(" separator="," close=")">
+            #{ledgerId}
+        </foreach>
+    </delete>
+</mapper>

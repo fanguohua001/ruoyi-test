@@ -21,16 +21,16 @@ public class WmsAlert extends BaseEntity
     @Excel(name = "预警 ID", cellType = Excel.ColumnType.NUMERIC)
     private Long alertId;
 
-    /** 商品 ID */
-    @Excel(name = "商品 ID", cellType = Excel.ColumnType.NUMERIC)
+    /** 物料 ID */
+    @Excel(name = "物料 ID", cellType = Excel.ColumnType.NUMERIC)
     private Long productId;
 
-    /** 商品编码 */
-    @Excel(name = "商品编码")
+    /** 物料编码 */
+    @Excel(name = "物料编码")
     private String productCode;
 
-    /** 商品名称 */
-    @Excel(name = "商品名称")
+    /** 物料名称 */
+    @Excel(name = "物料名称")
     private String productName;
 
     /** 仓库 ID */

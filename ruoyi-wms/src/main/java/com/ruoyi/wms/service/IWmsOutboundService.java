@@ -100,4 +100,12 @@ public interface IWmsOutboundService
      * @return 结果
      */
     public int ship(Long outboundId);
+
+    /**
+     * 完成出库单
+     *
+     * @param outboundId 出库单 ID
+     * @return 结果
+     */
+    public int finishOutboundOrder(Long outboundId);
 }

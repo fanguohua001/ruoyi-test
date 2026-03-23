@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsCategoryMapper">
+
+    <resultMap type="WmsCategory" id="WmsCategoryResult">
+        <result property="categoryId"    column="category_id"    />
+        <result property="categoryCode"    column="category_code"    />
+        <result property="categoryName"    column="category_name"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWmsCategoryVo">
+        select category_id, category_code, category_name, parent_id, order_num, status, create_by, create_time, update_by, update_time, remark from wms_category
+    </sql>
+
+    <select id="selectWmsCategoryList" parameterType="WmsCategory" resultMap="WmsCategoryResult">
+        <include refid="selectWmsCategoryVo"/>
+        <where>
+            <if test="categoryCode != null  and categoryCode != ''">
+                and category_code like concat('%', #{categoryCode}, '%')
+            </if>
+            <if test="categoryName != null  and categoryName != ''">
+                and category_name like concat('%', #{categoryName}, '%')
+            </if>
+            <if test="status != null  and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by order_num, category_id
+    </select>
+
+    <select id="selectWmsCategoryById" parameterType="Long" resultMap="WmsCategoryResult">
+        <include refid="selectWmsCategoryVo"/>
+        where category_id = #{categoryId}
+    </select>
+
+    <select id="selectWmsCategoryAll" resultMap="WmsCategoryResult">
+        <include refid="selectWmsCategoryVo"/>
+        where status = '0'
+        order by order_num, category_id
+    </select>
+
+    <select id="checkCategoryCodeUnique" parameterType="String" resultMap="WmsCategoryResult">
+        <include refid="selectWmsCategoryVo"/>
+        where category_code = #{categoryCode} limit 1
+    </select>
+
+    <insert id="insertWmsCategory" parameterType="WmsCategory" useGeneratedKeys="true" keyProperty="categoryId">
+        insert into wms_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryCode != null and categoryCode != ''">category_code,</if>
+            <if test="categoryName != null and categoryName != ''">category_name,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="categoryCode != null and categoryCode != ''">#{categoryCode},</if>
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsCategory" parameterType="WmsCategory">
+        update wms_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryCode != null and categoryCode != ''">category_code = #{categoryCode},</if>
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where category_id = #{categoryId}
+    </update>
+
+    <delete id="deleteWmsCategoryById" parameterType="Long">
+        delete from wms_category where category_id = #{categoryId}
+    </delete>
+
+    <delete id="deleteWmsCategoryByIds" parameterType="String">
+        delete from wms_category where category_id in
+        <foreach item="categoryId" collection="array" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+    </delete>
+</mapper>

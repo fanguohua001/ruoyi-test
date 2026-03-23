@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wms.mapper.WmsCustomerMapper">
+
+    <resultMap type="WmsCustomer" id="WmsCustomerResult">
+        <result property="customerId"    column="customer_id"    />
+        <result property="customerCode"    column="customer_code"    />
+        <result property="customerName"    column="customer_name"    />
+        <result property="contact"    column="contact"    />
+        <result property="phone"    column="phone"    />
+        <result property="address"    column="address"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWmsCustomerVo">
+        select customer_id, customer_code, customer_name, contact, phone, address, status, create_by, create_time, update_by, update_time, remark from wms_customer
+    </sql>
+
+    <select id="selectWmsCustomerList" parameterType="WmsCustomer" resultMap="WmsCustomerResult">
+        <include refid="selectWmsCustomerVo"/>
+        <where>
+            <if test="customerCode != null  and customerCode != ''">
+                and customer_code like concat('%', #{customerCode}, '%')
+            </if>
+            <if test="customerName != null  and customerName != ''">
+                and customer_name like concat('%', #{customerName}, '%')
+            </if>
+            <if test="contact != null  and contact != ''">
+                and contact like concat('%', #{contact}, '%')
+            </if>
+            <if test="phone != null  and phone != ''">
+                and phone like concat('%', #{phone}, '%')
+            </if>
+            <if test="status != null  and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by customer_id
+    </select>
+
+    <select id="selectWmsCustomerById" parameterType="Long" resultMap="WmsCustomerResult">
+        <include refid="selectWmsCustomerVo"/>
+        where customer_id = #{customerId}
+    </select>
+
+    <select id="selectWmsCustomerAll" resultMap="WmsCustomerResult">
+        <include refid="selectWmsCustomerVo"/>
+        where status = '0'
+        order by customer_id
+    </select>
+
+    <select id="checkCustomerCodeUnique" parameterType="String" resultMap="WmsCustomerResult">
+        <include refid="selectWmsCustomerVo"/>
+        where customer_code = #{customerCode} limit 1
+    </select>
+
+    <insert id="insertWmsCustomer" parameterType="WmsCustomer" useGeneratedKeys="true" keyProperty="customerId">
+        insert into wms_customer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerCode != null and customerCode != ''">customer_code,</if>
+            <if test="customerName != null and customerName != ''">customer_name,</if>
+            <if test="contact != null and contact != ''">contact,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerCode != null and customerCode != ''">#{customerCode},</if>
+            <if test="customerName != null and customerName != ''">#{customerName},</if>
+            <if test="contact != null and contact != ''">#{contact},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsCustomer" parameterType="WmsCustomer">
+        update wms_customer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerCode != null and customerCode != ''">customer_code = #{customerCode},</if>
+            <if test="customerName != null and customerName != ''">customer_name = #{customerName},</if>
+            <if test="contact != null and contact != ''">contact = #{contact},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where customer_id = #{customerId}
+    </update>
+
+    <delete id="deleteWmsCustomerById" parameterType="Long">
+        delete from wms_customer where customer_id = #{customerId}
+    </delete>
+
+    <delete id="deleteWmsCustomerByIds" parameterType="String">
+        delete from wms_customer where customer_id in
+        <foreach item="customerId" collection="array" open="(" separator="," close=")">
+            #{customerId}
+        </foreach>
+    </delete>
+</mapper>

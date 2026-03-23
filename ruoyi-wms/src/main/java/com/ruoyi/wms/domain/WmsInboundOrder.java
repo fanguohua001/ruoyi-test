@@ -1,6 +1,7 @@
 package com.ruoyi.wms.domain;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -49,9 +50,13 @@ public class WmsInboundOrder extends BaseEntity
     @Excel(name = "仓库 ID", cellType = Excel.ColumnType.NUMERIC)
     private Long warehouseId;
 
-    /** 状态（0 草稿 1 待收货 2 收货中 3 待质检 4 待上架 5 已完成 6 已取消） */
-    @Excel(name = "状态", readConverterExp = "0=草稿，1=待收货，2=收货中，3=待质检，4=待上架，5=已完成，6=已取消")
+    /** 状态（0 无 1 待收货 2 收货中 3 待质检 4 待上架 5 已入库） */
+    @Excel(name = "状态", readConverterExp = "0=无，1=待收货，2=收货中，3=待质检，4=待上架，5=已入库")
     private String status;
+
+    /** 是否完成（0 草稿 1 已完成） */
+    @Excel(name = "是否完成", readConverterExp = "0=草稿，1=已完成")
+    private Integer isFinished;
 
     /** 总数量 */
     @Excel(name = "总数量")
@@ -78,6 +83,9 @@ public class WmsInboundOrder extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "实际到货日期", width = 30, dateFormat = "yyyy-MM-dd")
     private Date actualDate;
+
+    /** 入库明细列表 */
+    private List<WmsInboundItem> items;
 
     public Long getInboundId()
     {
@@ -169,6 +177,16 @@ public class WmsInboundOrder extends BaseEntity
         this.status = status;
     }
 
+    public Integer getIsFinished()
+    {
+        return isFinished;
+    }
+
+    public void setIsFinished(Integer isFinished)
+    {
+        this.isFinished = isFinished;
+    }
+
     public BigDecimal getTotalQty()
     {
         return totalQty;
@@ -229,6 +247,16 @@ public class WmsInboundOrder extends BaseEntity
         this.actualDate = actualDate;
     }
 
+    public List<WmsInboundItem> getItems()
+    {
+        return items;
+    }
+
+    public void setItems(List<WmsInboundItem> items)
+    {
+        this.items = items;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -241,6 +269,7 @@ public class WmsInboundOrder extends BaseEntity
             .append("supplierName", getSupplierName())
             .append("warehouseId", getWarehouseId())
             .append("status", getStatus())
+            .append("isFinished", getIsFinished())
             .append("totalQty", getTotalQty())
             .append("receivedQty", getReceivedQty())
             .append("qualifiedQty", getQualifiedQty())

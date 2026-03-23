@@ -15,21 +15,37 @@ VALUES ('基础资料', @parentId, 1, 'basic', NULL, 1, 0, 'M', '0', '0', 'produ
 
 SET @basicId = LAST_INSERT_ID();
 
--- 商品管理
+-- 物料管理
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, remark)
-VALUES ('商品管理', @basicId, 1, 'product', 'wms/product/index', 1, 0, 'C', '0', '0', 'product', 'admin', NOW(), '商品管理菜单');
+VALUES ('物料管理', @basicId, 1, 'product', 'wms/product/index', 1, 0, 'C', '0', '0', 'product', 'admin', NOW(), '物料管理菜单');
 
 SET @productMenuId = LAST_INSERT_ID();
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
-VALUES ('商品查询', @productMenuId, 1, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:list', '商品查询按钮');
+VALUES ('物料查询', @productMenuId, 1, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:list', '物料查询按钮');
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
-VALUES ('商品新增', @productMenuId, 2, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:add', '商品新增按钮');
+VALUES ('物料新增', @productMenuId, 2, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:add', '物料新增按钮');
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
-VALUES ('商品修改', @productMenuId, 3, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:edit', '商品修改按钮');
+VALUES ('物料修改', @productMenuId, 3, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:edit', '物料修改按钮');
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
-VALUES ('商品删除', @productMenuId, 4, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:remove', '商品删除按钮');
+VALUES ('物料删除', @productMenuId, 4, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:remove', '物料删除按钮');
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
-VALUES ('商品导出', @productMenuId, 5, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:export', '商品导出按钮');
+VALUES ('物料导出', @productMenuId, 5, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:product:export', '物料导出按钮');
+
+-- 物料分类管理
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, remark)
+VALUES ('物料分类', @basicId, 3, 'category', 'wms/category/index', 1, 0, 'C', '0', '0', 'list', 'admin', NOW(), '物料分类菜单');
+
+SET @categoryMenuId = LAST_INSERT_ID();
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('分类查询', @categoryMenuId, 1, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:category:list', '分类查询按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('分类新增', @categoryMenuId, 2, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:category:add', '分类新增按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('分类修改', @categoryMenuId, 3, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:category:edit', '分类修改按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('分类删除', @categoryMenuId, 4, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:category:remove', '分类删除按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('分类导出', @categoryMenuId, 5, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:category:export', '分类导出按钮');
 
 -- 库位管理
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, remark)
@@ -66,6 +82,10 @@ INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame
 VALUES ('入库质检', @inboundMenuId, 6, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:inbound:quality', '入库质检按钮');
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
 VALUES ('入库上架', @inboundMenuId, 7, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:inbound:putaway', '入库上架按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('入库完成', @inboundMenuId, 8, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:inbound:finish', '入库完成按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('入库导出', @inboundMenuId, 9, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:inbound:export', '入库导出按钮');
 
 -- ==================== 出库管理 ====================
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, remark)
@@ -114,3 +134,61 @@ INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame
 VALUES ('预警处理', @alertMenuId, 2, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:alert:handle', '预警处理按钮');
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
 VALUES ('预警生成', @alertMenuId, 3, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:alert:generate', '预警生成按钮');
+
+-- ==================== 盘点管理 ====================
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, remark)
+VALUES ('盘点管理', @parentId, 6, 'stockCheck', 'wms/stockCheck/index', 1, 0, 'C', '0', '0', 'list', 'admin', NOW(), '盘点管理菜单');
+
+SET @stockCheckMenuId = LAST_INSERT_ID();
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('盘点查询', @stockCheckMenuId, 1, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:stockCheck:list', '盘点查询按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('盘点新增', @stockCheckMenuId, 2, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:stockCheck:add', '盘点新增按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('盘点修改', @stockCheckMenuId, 3, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:stockCheck:edit', '盘点修改按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('盘点删除', @stockCheckMenuId, 4, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:stockCheck:remove', '盘点删除按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('盘点导出', @stockCheckMenuId, 5, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:stockCheck:export', '盘点导出按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('开始盘点', @stockCheckMenuId, 6, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:stockCheck:start', '开始盘点按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('完成盘点', @stockCheckMenuId, 7, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:stockCheck:finish', '完成盘点按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('审核盘点', @stockCheckMenuId, 8, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:stockCheck:approve', '审核盘点按钮');
+
+-- ==================== 移库管理 ====================
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, remark)
+VALUES ('移库管理', @parentId, 7, 'transfer', 'wms/transfer/index', 1, 0, 'C', '0', '0', 'bounce', 'admin', NOW(), '移库管理菜单');
+
+SET @transferMenuId = LAST_INSERT_ID();
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('移库查询', @transferMenuId, 1, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:transfer:list', '移库查询按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('移库新增', @transferMenuId, 2, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:transfer:add', '移库新增按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('移库修改', @transferMenuId, 3, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:transfer:edit', '移库修改按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('移库删除', @transferMenuId, 4, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:transfer:remove', '移库删除按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('移库导出', @transferMenuId, 5, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:transfer:export', '移库导出按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('执行移库', @transferMenuId, 6, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:transfer:execute', '执行移库按钮');
+
+-- ==================== 客户订单管理 ====================
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, remark)
+VALUES ('客户订单', @parentId, 8, 'customerOrder', 'wms/customerOrder/index', 1, 0, 'C', '0', '0', 'form', 'admin', NOW(), '客户订单菜单');
+
+SET @customerOrderMenuId = LAST_INSERT_ID();
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('订单查询', @customerOrderMenuId, 1, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:customerOrder:list', '订单查询按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('订单新增', @customerOrderMenuId, 2, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:customerOrder:add', '订单新增按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('订单修改', @customerOrderMenuId, 3, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:customerOrder:edit', '订单修改按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('订单删除', @customerOrderMenuId, 4, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:customerOrder:remove', '订单删除按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('订单完成', @customerOrderMenuId, 5, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:customerOrder:finish', '订单完成按钮');
+INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, icon, create_by, create_time, perms, remark)
+VALUES ('订单导出', @customerOrderMenuId, 6, '#', '', 1, 0, 'F', '0', '0', '#', 'admin', NOW(), 'wms:customerOrder:export', '订单导出按钮');

@@ -24,10 +24,20 @@
           <el-option label="暂存位" value="3" />
         </el-select>
       </el-form-item>
+      <el-form-item label="仓库" prop="warehouseId">
+        <el-select v-model="queryParams.warehouseId" placeholder="请选择仓库" clearable @change="handleQuery">
+          <el-option
+            v-for="item in warehouseOptions"
+            :key="item.warehouseId"
+            :label="item.warehouseName"
+            :value="item.warehouseId"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="状态" clearable>
-          <el-option label="禁用" value="0" />
-          <el-option label="启用" value="1" />
+          <el-option label="正常" value="0" />
+          <el-option label="停用" value="1" />
           <el-option label="占用" value="2" />
           <el-option label="锁定" value="3" />
         </el-select>
@@ -86,9 +96,10 @@
 
     <el-table v-loading="loading" :data="locationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="库位 ID" align="center" prop="locationId" />
       <el-table-column label="库位编码" align="center" prop="locationCode" />
       <el-table-column label="库位名称" align="center" prop="locationName" :show-overflow-tooltip="true" />
+      <el-table-column label="仓库名称" align="center" prop="warehouseName" :show-overflow-tooltip="true" />
+      <el-table-column label="库区名称" align="center" prop="zoneName" :show-overflow-tooltip="true" />
       <el-table-column label="库位类型" align="center" prop="locationType">
         <template slot-scope="scope">
           <span v-if="scope.row.locationType == '1'">存储位</span>
@@ -102,8 +113,8 @@
       <el-table-column label="层号" align="center" prop="levelNo" />
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
-          <span v-if="scope.row.status == '0'">禁用</span>
-          <span v-else-if="scope.row.status == '1'">启用</span>
+          <span v-if="scope.row.status == '0'">正常</span>
+          <span v-else-if="scope.row.status == '1'">停用</span>
           <span v-else-if="scope.row.status == '2'">占用</span>
           <span v-else-if="scope.row.status == '3'">锁定</span>
         </template>
@@ -137,47 +148,101 @@
     />
 
     <!-- 添加或修改库位对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="库位编码" prop="locationCode">
-          <el-input v-model="form.locationCode" placeholder="请输入库位编码" />
-        </el-form-item>
-        <el-form-item label="库位名称" prop="locationName">
-          <el-input v-model="form.locationName" placeholder="请输入库位名称" />
-        </el-form-item>
-        <el-form-item label="库位类型" prop="locationType">
-          <el-select v-model="form.locationType" placeholder="请选择库位类型">
-            <el-option label="存储位" value="1" />
-            <el-option label="拣货位" value="2" />
-            <el-option label="暂存位" value="3" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="区域编码" prop="areaCode">
-          <el-input v-model="form.areaCode" placeholder="请输入区域编码" />
-        </el-form-item>
-        <el-form-item label="行号" prop="rowNo">
-          <el-input v-model="form.rowNo" placeholder="请输入行号" />
-        </el-form-item>
-        <el-form-item label="列号" prop="columnNo">
-          <el-input v-model="form.columnNo" placeholder="请输入列号" />
-        </el-form-item>
-        <el-form-item label="层号" prop="levelNo">
-          <el-input v-model="form.levelNo" placeholder="请输入层号" />
-        </el-form-item>
-        <el-form-item label="最大承重" prop="maxWeight">
-          <el-input-number v-model="form.maxWeight" :min="0" :precision="2" />
-        </el-form-item>
-        <el-form-item label="最大体积" prop="maxVolume">
-          <el-input-number v-model="form.maxVolume" :min="0" :precision="2" />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择状态">
-            <el-option label="禁用" value="0" />
-            <el-option label="启用" value="1" />
-            <el-option label="占用" value="2" />
-            <el-option label="锁定" value="3" />
-          </el-select>
-        </el-form-item>
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="库位编码" prop="locationCode">
+              <el-input v-model="form.locationCode" placeholder="请输入库位编码" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="库位名称" prop="locationName">
+              <el-input v-model="form.locationName" placeholder="请输入库位名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="仓库" prop="warehouseId">
+              <el-select v-model="form.warehouseId" placeholder="请选择仓库" style="width: 100%" @change="handleWarehouseChange">
+                <el-option
+                  v-for="item in warehouseOptions"
+                  :key="item.warehouseId"
+                  :label="item.warehouseName"
+                  :value="item.warehouseId"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="库区" prop="zoneId">
+              <el-select v-model="form.zoneId" placeholder="请选择库区" style="width: 100%">
+                <el-option
+                  v-for="item in zoneOptions"
+                  :key="item.zoneId"
+                  :label="item.zoneName"
+                  :value="item.zoneId"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="库位类型" prop="locationType">
+              <el-select v-model="form.locationType" placeholder="请选择库位类型">
+                <el-option label="存储位" value="1" />
+                <el-option label="拣货位" value="2" />
+                <el-option label="暂存位" value="3" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="form.status" placeholder="请选择状态">
+                <el-option label="正常" value="0" />
+                <el-option label="停用" value="1" />
+                <el-option label="占用" value="2" />
+                <el-option label="锁定" value="3" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="区域编码" prop="areaCode">
+              <el-input v-model="form.areaCode" placeholder="请输入区域编码" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="行号" prop="rowNo">
+              <el-input v-model="form.rowNo" placeholder="请输入行号" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="列号" prop="columnNo">
+              <el-input v-model="form.columnNo" placeholder="请输入列号" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="层号" prop="levelNo">
+              <el-input v-model="form.levelNo" placeholder="请输入层号" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="最大承重" prop="maxWeight">
+              <el-input-number v-model="form.maxWeight" :min="0" :precision="2" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="最大体积" prop="maxVolume">
+              <el-input-number v-model="form.maxVolume" :min="0" :precision="2" />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
@@ -192,6 +257,8 @@
 
 <script>
 import { listLocation, getLocation, delLocation, addLocation, updateLocation, exportLocation } from "@/api/wms/location"
+import { allWarehouse } from "@/api/wms/warehouse"
+import { listZoneByWarehouse } from "@/api/wms/zone"
 
 export default {
   name: "Location",
@@ -206,11 +273,15 @@ export default {
       locationList: [],
       open: false,
       title: "",
+      warehouseOptions: [],
+      zoneOptions: [],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
         locationCode: undefined,
         locationName: undefined,
+        warehouseId: undefined,
+        zoneId: undefined,
         locationType: undefined,
         areaCode: undefined,
         status: undefined
@@ -222,12 +293,19 @@ export default {
         ],
         locationName: [
           { required: true, message: "库位名称不能为空", trigger: "blur" }
+        ],
+        warehouseId: [
+          { required: true, message: "请选择仓库", trigger: "change" }
+        ],
+        zoneId: [
+          { required: true, message: "请选择库区", trigger: "change" }
         ]
       }
     }
   },
   created() {
     this.getList()
+    this.getWarehouseList()
   },
   methods: {
     getList() {
@@ -238,6 +316,24 @@ export default {
         this.loading = false
       })
     },
+    getWarehouseList() {
+      allWarehouse().then(response => {
+        this.warehouseOptions = response.data
+      })
+    },
+    getZoneList(warehouseId) {
+      listZoneByWarehouse(warehouseId).then(response => {
+        this.zoneOptions = response.data
+      })
+    },
+    handleWarehouseChange(warehouseId) {
+      if (warehouseId) {
+        this.getZoneList(warehouseId)
+      } else {
+        this.zoneOptions = []
+      }
+      this.form.zoneId = undefined
+    },
     cancel() {
       this.open = false
       this.reset()
@@ -247,6 +343,8 @@ export default {
         locationId: undefined,
         locationCode: undefined,
         locationName: undefined,
+        warehouseId: undefined,
+        zoneId: undefined,
         locationType: "1",
         areaCode: undefined,
         rowNo: undefined,
@@ -254,7 +352,7 @@ export default {
         levelNo: undefined,
         maxWeight: undefined,
         maxVolume: undefined,
-        status: "1",
+        status: "0",
         remark: undefined
       }
       this.resetForm("form")
@@ -269,6 +367,10 @@ export default {
     },
     handleAdd() {
       this.reset()
+      // 确保仓库列表已加载
+      if (this.warehouseOptions.length === 0) {
+        this.getWarehouseList()
+      }
       this.open = true
       this.title = "添加库位"
     },
@@ -284,6 +386,10 @@ export default {
         this.form = response.data
         this.open = true
         this.title = "修改库位"
+        // 根据仓库 ID 加载库区列表
+        if (this.form.warehouseId) {
+          this.getZoneList(this.form.warehouseId)
+        }
       })
     },
     submitForm() {

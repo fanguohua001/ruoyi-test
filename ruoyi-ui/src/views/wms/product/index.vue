@@ -1,29 +1,31 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="商品编码" prop="productCode">
+      <el-form-item label="物料编码" prop="productCode">
         <el-input
           v-model="queryParams.productCode"
-          placeholder="请输入商品编码"
+          placeholder="请输入物料编码"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="商品名称" prop="productName">
+      <el-form-item label="物料名称" prop="productName">
         <el-input
           v-model="queryParams.productName"
-          placeholder="请输入商品名称"
+          placeholder="请输入物料名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="分类" prop="category">
-        <el-input
-          v-model="queryParams.category"
-          placeholder="请输入分类"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.category" placeholder="请选择分类" clearable>
+          <el-option
+            v-for="item in categoryOptions"
+            :key="item.categoryId"
+            :label="item.categoryName"
+            :value="item.categoryCode"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="状态" clearable>
@@ -89,10 +91,13 @@
 
     <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="商品 ID" align="center" prop="productId" />
-      <el-table-column label="商品编码" align="center" prop="productCode" />
-      <el-table-column label="商品名称" align="center" prop="productName" :show-overflow-tooltip="true" />
-      <el-table-column label="分类" align="center" prop="category" />
+      <el-table-column label="物料编码" align="center" prop="productCode" />
+      <el-table-column label="物料名称" align="center" prop="productName" :show-overflow-tooltip="true" />
+      <el-table-column label="分类" align="center">
+        <template slot-scope="scope">
+          {{ getCategoryName(scope.row.category) }}
+        </template>
+      </el-table-column>
       <el-table-column label="规格型号" align="center" prop="specification" />
       <el-table-column label="单位" align="center" prop="unit" />
       <el-table-column label="安全库存" align="center" prop="safetyStock" />
@@ -129,17 +134,24 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改商品对话框 -->
+    <!-- 添加或修改物料对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="商品编码" prop="productCode">
-          <el-input v-model="form.productCode" placeholder="请输入商品编码" />
+        <el-form-item label="物料编码" prop="productCode">
+          <el-input v-model="form.productCode" placeholder="请输入物料编码" />
         </el-form-item>
-        <el-form-item label="商品名称" prop="productName">
-          <el-input v-model="form.productName" placeholder="请输入商品名称" />
+        <el-form-item label="物料名称" prop="productName">
+          <el-input v-model="form.productName" placeholder="请输入物料名称" />
         </el-form-item>
         <el-form-item label="分类" prop="category">
-          <el-input v-model="form.category" placeholder="请输入分类" />
+          <el-select v-model="form.category" placeholder="请选择分类" clearable>
+            <el-option
+              v-for="item in categoryOptions"
+              :key="item.categoryId"
+              :label="item.categoryName"
+              :value="item.categoryCode"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="规格型号" prop="specification">
           <el-input v-model="form.specification" placeholder="请输入规格型号" />
@@ -179,6 +191,7 @@
 
 <script>
 import { listProduct, getProduct, delProduct, addProduct, updateProduct, exportProduct } from "@/api/wms/product"
+import { allCategory } from "@/api/wms/category"
 
 export default {
   name: "Product",
@@ -194,6 +207,7 @@ export default {
       productList: [],
       open: false,
       title: "",
+      categoryOptions: [],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -205,16 +219,17 @@ export default {
       form: {},
       rules: {
         productCode: [
-          { required: true, message: "商品编码不能为空", trigger: "blur" }
+          { required: true, message: "物料编码不能为空", trigger: "blur" }
         ],
         productName: [
-          { required: true, message: "商品名称不能为空", trigger: "blur" }
+          { required: true, message: "物料名称不能为空", trigger: "blur" }
         ]
       }
     }
   },
   created() {
     this.getList()
+    this.getCategoryList()
   },
   methods: {
     getList() {
@@ -224,6 +239,15 @@ export default {
         this.total = response.total
         this.loading = false
       })
+    },
+    getCategoryList() {
+      allCategory().then(response => {
+        this.categoryOptions = response.data
+      })
+    },
+    getCategoryName(categoryCode) {
+      const category = this.categoryOptions.find(item => item.categoryCode === categoryCode)
+      return category ? category.categoryName : categoryCode
     },
     cancel() {
       this.open = false
@@ -257,7 +281,7 @@ export default {
     handleAdd() {
       this.reset()
       this.open = true
-      this.title = "添加商品"
+      this.title = "添加物料"
     },
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.productId)
@@ -270,7 +294,7 @@ export default {
       getProduct(productId).then(response => {
         this.form = response.data
         this.open = true
-        this.title = "修改商品"
+        this.title = "修改物料"
       })
     },
     submitForm() {
@@ -294,7 +318,7 @@ export default {
     },
     handleDelete(row) {
       const productIds = row.productId || this.ids
-      this.$modal.confirm('是否确认删除商品编号为"' + productIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除物料编号为"' + productIds + '"的数据项？').then(function() {
         return delProduct(productIds)
       }).then(() => {
         this.getList()

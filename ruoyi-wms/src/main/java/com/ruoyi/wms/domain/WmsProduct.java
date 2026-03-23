@@ -9,7 +9,7 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
- * 商品对象 wms_product
+ * 物料对象 wms_product
  *
  * @author ruoyi
  */
@@ -17,20 +17,20 @@ public class WmsProduct extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 商品 ID */
-    @Excel(name = "商品 ID", cellType = Excel.ColumnType.NUMERIC)
+    /** 物料 ID */
+    @Excel(name = "物料 ID", cellType = Excel.ColumnType.NUMERIC)
     private Long productId;
 
-    /** 商品编码 */
-    @Excel(name = "商品编码")
-    @NotBlank(message = "商品编码不能为空")
-    @Size(min = 0, max = 50, message = "商品编码长度不能超过 50 个字符")
+    /** 物料编码 */
+    @Excel(name = "物料编码")
+    @NotBlank(message = "物料编码不能为空")
+    @Size(min = 0, max = 50, message = "物料编码长度不能超过 50 个字符")
     private String productCode;
 
-    /** 商品名称 */
-    @Excel(name = "商品名称")
-    @NotBlank(message = "商品名称不能为空")
-    @Size(min = 0, max = 200, message = "商品名称长度不能超过 200 个字符")
+    /** 物料名称 */
+    @Excel(name = "物料名称")
+    @NotBlank(message = "物料名称不能为空")
+    @Size(min = 0, max = 200, message = "物料名称长度不能超过 200 个字符")
     private String productName;
 
     /** 分类 */
