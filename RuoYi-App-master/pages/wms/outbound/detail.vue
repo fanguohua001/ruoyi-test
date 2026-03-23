@@ -112,8 +112,10 @@ export default {
       this.loading = true
       try {
         const res = await getOutbound(this.outboundId)
-        this.detail = res || {}
-        this.items = res.items || []
+        console.log('API 返回:', res)
+        this.detail = res.data || res || {}
+        this.items = (res.data && res.data.items) || res.items || []
+        console.log('明细数据:', this.items)
       } catch (e) {
         console.error('加载失败:', e)
         uni.showToast({
