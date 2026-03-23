@@ -115,6 +115,26 @@
     "style": {
       "navigationBarTitleText": "发货作业"
     }
+  }, {
+    "path": "pages/wms/stockCheck/list",
+    "style": {
+      "navigationBarTitleText": "盘点单列表"
+    }
+  }, {
+    "path": "pages/wms/stockCheck/execute",
+    "style": {
+      "navigationBarTitleText": "盘点执行"
+    }
+  }, {
+    "path": "pages/wms/transfer/list",
+    "style": {
+      "navigationBarTitleText": "移库单列表"
+    }
+  }, {
+    "path": "pages/wms/transfer/execute",
+    "style": {
+      "navigationBarTitleText": "移库执行"
+    }
   }],
   "tabBar": {
     "color": "#000000",
