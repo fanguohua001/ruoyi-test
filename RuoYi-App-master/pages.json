@@ -95,6 +95,26 @@
     "style": {
       "navigationBarTitleText": "上架作业"
     }
+  }, {
+    "path": "pages/wms/outbound/list",
+    "style": {
+      "navigationBarTitleText": "出库单列表"
+    }
+  }, {
+    "path": "pages/wms/outbound/picking",
+    "style": {
+      "navigationBarTitleText": "拣货作业"
+    }
+  }, {
+    "path": "pages/wms/outbound/review",
+    "style": {
+      "navigationBarTitleText": "复核作业"
+    }
+  }, {
+    "path": "pages/wms/outbound/ship",
+    "style": {
+      "navigationBarTitleText": "发货作业"
+    }
   }],
   "tabBar": {
     "color": "#000000",
