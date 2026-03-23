@@ -96,6 +96,11 @@
       "navigationBarTitleText": "上架作业"
     }
   }, {
+    "path": "pages/wms/inbound/detail",
+    "style": {
+      "navigationBarTitleText": "入库单明细"
+    }
+  }, {
     "path": "pages/wms/outbound/list",
     "style": {
       "navigationBarTitleText": "出库单列表"
@@ -114,6 +119,11 @@
     "path": "pages/wms/outbound/ship",
     "style": {
       "navigationBarTitleText": "发货作业"
+    }
+  }, {
+    "path": "pages/wms/outbound/detail",
+    "style": {
+      "navigationBarTitleText": "出库单明细"
     }
   }, {
     "path": "pages/wms/stockCheck/list",

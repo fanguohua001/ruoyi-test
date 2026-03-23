@@ -45,11 +45,13 @@
           v-for="item in list"
           :key="item.inboundId"
           class="list-item"
-          @click="onItemClick(item)"
         >
-          <view class="item-header">
+          <view class="item-header" @click="onItemClick(item)">
             <text class="item-no">{{ item.inboundNo }}</text>
             <wms-status-tag :status="item.status" />
+          </view>
+          <view class="item-actions">
+            <button class="action-btn" @click="viewDetail(item.inboundId)">查看明细</button>
           </view>
           <view class="item-body">
             <view class="item-row">
@@ -187,6 +189,12 @@ export default {
           url: `/pages/wms/inbound/putaway?inboundId=${item.inboundId}`
         })
       }
+    },
+    // 查看明细
+    viewDetail(inboundId) {
+      uni.navigateTo({
+        url: `/pages/wms/inbound/detail?inboundId=${inboundId}`
+      })
     }
   }
 }
@@ -287,6 +295,26 @@ export default {
     align-items: center;
     padding-bottom: 15rpx;
     border-bottom: 1rpx solid #f0f0f0;
+  }
+
+  .item-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 15rpx;
+
+    .action-btn {
+      padding: 8rpx 20rpx;
+      font-size: 24rpx;
+      background-color: #1890ff;
+      color: #fff;
+      border: none;
+      border-radius: 6rpx;
+      min-width: 160rpx;
+
+      &::after {
+        border: none;
+      }
+    }
   }
 
   .item-no {

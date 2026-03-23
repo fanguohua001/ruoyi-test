@@ -45,11 +45,13 @@
           v-for="item in list"
           :key="item.outboundId"
           class="list-item"
-          @click="onItemClick(item)"
         >
-          <view class="item-header">
+          <view class="item-header" @click="onItemClick(item)">
             <text class="item-no">{{ item.outboundNo }}</text>
             <wms-status-tag :status="item.status" :status-map="outboundStatusMap" />
+          </view>
+          <view class="item-actions">
+            <button class="action-btn" @click="viewDetail(item.outboundId)">查看明细</button>
           </view>
           <view class="item-body">
             <view class="item-row">
@@ -200,6 +202,12 @@ export default {
           url: `/pages/wms/outbound/ship?outboundId=${item.outboundId}`
         })
       }
+    },
+    // 查看明细
+    viewDetail(outboundId) {
+      uni.navigateTo({
+        url: `/pages/wms/outbound/detail?outboundId=${outboundId}`
+      })
     }
   }
 }
@@ -302,10 +310,24 @@ export default {
     border-bottom: 1rpx solid #f0f0f0;
   }
 
-  .item-no {
-    font-size: 30rpx;
-    font-weight: 600;
-    color: #333;
+  .item-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 15rpx;
+
+    .action-btn {
+      padding: 8rpx 20rpx;
+      font-size: 24rpx;
+      background-color: #722ed1;
+      color: #fff;
+      border: none;
+      border-radius: 6rpx;
+      min-width: 160rpx;
+
+      &::after {
+        border: none;
+      }
+    }
   }
 
   .item-body {
