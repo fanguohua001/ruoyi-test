@@ -14,7 +14,7 @@
     <!-- 宫格组件 -->
     <uni-section title="系统管理" type="line"></uni-section>
     <view class="grid-body">
-      <uni-grid :column="4" :showBorder="false" @change="changeGrid">
+      <uni-grid :column="4" :showBorder="false" @change="changeSystemGrid">
         <uni-grid-item>
           <view class="grid-item-box">
             <uni-icons type="person-filled" size="30"></uni-icons>
@@ -71,6 +71,10 @@
         </uni-grid-item>
       </uni-grid>
     </view>
+
+
+      
+    </view>
   </view>
 </template>
 
@@ -99,7 +103,7 @@
       changeSwiper(e) {
         this.current = e.detail.current
       },
-      changeGrid(e) {
+      changeSystemGrid(e) {
         this.$modal.showToast('模块建设中~')
       }
     }

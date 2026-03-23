@@ -55,16 +55,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select inbound_id, inbound_no, inbound_type, source_type, source_no, supplier_id, supplier_name, warehouse_id, status, is_finished, total_qty, received_qty, qualified_qty, unqualified_qty, expected_date, actual_date, create_by, create_time, update_by, update_time, remark from wms_inbound_order
     </sql>
 
+    <!-- 入库单列表查询（不联查明细，提升性能） -->
     <select id="selectInboundOrderList" parameterType="WmsInboundOrder" resultMap="WmsInboundOrderResult">
-        <include refid="selectInboundOrderVo"/>
+        SELECT
+            o.inbound_id, o.inbound_no, o.inbound_type, o.source_type, o.source_no,
+            o.supplier_id, o.supplier_name, o.warehouse_id, o.status, o.is_finished,
+            o.total_qty, o.received_qty, o.qualified_qty, o.unqualified_qty,
+            o.expected_date, o.actual_date, o.create_by, o.create_time,
+            o.update_by, o.update_time, o.remark
+        FROM wms_inbound_order o
         <where>
-            <if test="inboundNo != null  and inboundNo != ''"> and inbound_no = #{inboundNo}</if>
-            <if test="inboundType != null  and inboundType != ''"> and inbound_type = #{inboundType}</if>
-            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
-            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
-            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="inboundNo != null  and inboundNo != ''"> and o.inbound_no = #{inboundNo}</if>
+            <if test="inboundType != null  and inboundType != ''"> and o.inbound_type = #{inboundType}</if>
+            <if test="supplierId != null "> and o.supplier_id = #{supplierId}</if>
+            <if test="supplierName != null  and supplierName != ''"> and o.supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="warehouseId != null "> and o.warehouse_id = #{warehouseId}</if>
+            <if test="status != null  and status != ''"> and o.status = #{status}</if>
+            <if test="isFinished != null "> and o.is_finished = #{isFinished}</if>
+            <if test="startTime != null"> and o.create_time &gt;= #{startTime}</if>
+            <if test="endTime != null"> and o.create_time &lt;= DATE_ADD(#{endTime}, INTERVAL 1 DAY)</if>
         </where>
+        ORDER BY o.create_time DESC
     </select>
 
     <select id="selectInboundOrderById" parameterType="Long" resultMap="WmsInboundOrderResult">
@@ -167,10 +178,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="productCode != null">product_code,</if>
             <if test="productName != null">product_name,</if>
             <if test="expectedQty != null">expected_qty,</if>
+            <if test="receivedQty != null">received_qty,</if>
+            <if test="qualifiedQty != null">qualified_qty,</if>
             <if test="unit != null">unit,</if>
             <if test="batchNo != null">batch_no,</if>
             <if test="productionDate != null">production_date,</if>
             <if test="expiryDate != null">expiry_date,</if>
+            <if test="locationId != null">location_id,</if>
             <if test="status != null">status,</if>
             <if test="createBy != null and createBy != ''">create_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -182,10 +196,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="productCode != null">#{productCode},</if>
             <if test="productName != null">#{productName},</if>
             <if test="expectedQty != null">#{expectedQty},</if>
+            <if test="receivedQty != null">#{receivedQty},</if>
+            <if test="qualifiedQty != null">#{qualifiedQty},</if>
             <if test="unit != null">#{unit},</if>
             <if test="batchNo != null">#{batchNo},</if>
             <if test="productionDate != null">#{productionDate},</if>
             <if test="expiryDate != null">#{expiryDate},</if>
+            <if test="locationId != null">#{locationId},</if>
             <if test="status != null">#{status},</if>
             <if test="createBy != null and createBy != ''">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>

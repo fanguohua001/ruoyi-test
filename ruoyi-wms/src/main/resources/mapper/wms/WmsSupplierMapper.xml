@@ -42,7 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 and status = #{status}
             </if>
         </where>
-        order by supplier_id
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectWmsSupplierById" parameterType="Long" resultMap="WmsSupplierResult">

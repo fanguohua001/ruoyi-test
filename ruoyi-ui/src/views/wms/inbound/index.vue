@@ -32,15 +32,16 @@
           <el-option label="已完成" value="1" />
         </el-select>
       </el-form-item>
-      <el-form-item label="供应商" prop="supplierId">
-        <el-select v-model="queryParams.supplierId" placeholder="请选择供应商" clearable>
-          <el-option
-            v-for="item in supplierOptions"
-            :key="item.supplierId"
-            :label="item.supplierName"
-            :value="item.supplierId"
-          />
-        </el-select>
+      <el-form-item label="创建时间" prop="dateRange">
+        <el-date-picker
+          v-model="queryParams.dateRange"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          value-format="yyyy-MM-dd"
+          style="width: 240px"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -192,18 +193,30 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="12" v-if="form.inboundType === '1'">
+            <el-form-item label="采购订单" prop="sourceNo">
+              <el-row :gutter="5">
+                <el-col :span="18">
+                  <el-input v-model="form.purchaseOrderNo" placeholder="请选择采购订单" readonly />
+                </el-col>
+                <el-col :span="6">
+                  <el-button type="info" icon="el-icon-search" size="small" @click="handleOpenPurchaseOrderDialog">选择</el-button>
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="供应商" prop="supplierId">
-              <el-select v-model="form.supplierId" placeholder="请选择供应商" clearable style="width: 100%" @change="handleSupplierChange">
-                <el-option
-                  v-for="item in supplierOptions"
-                  :key="item.supplierId"
-                  :label="item.supplierName"
-                  :value="item.supplierId"
-                />
-              </el-select>
+              <el-row :gutter="5">
+                <el-col :span="18">
+                  <el-input v-model="form.supplierName" placeholder="请选择供应商" readonly />
+                </el-col>
+                <el-col :span="6">
+                  <el-button type="info" icon="el-icon-search" size="small" @click="handleOpenSupplierDialog">选择</el-button>
+                </el-col>
+              </el-row>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -313,6 +326,13 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row v-if="viewForm.inboundType == '1' && viewForm.sourceNo">
+          <el-col :span="12">
+            <el-form-item label="采购订单">
+              <span>{{ viewForm.sourceNo }}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="供应商">
@@ -416,14 +436,126 @@
         <el-button @click="productDialogOpen = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 选择供应商对话框 -->
+    <el-dialog title="选择供应商" :visible.sync="supplierDialogOpen" width="800px" :modal-append-to-body="true" :close-on-click-modal="false" append-to-body>
+      <el-form :model="supplierQuery" size="small" :inline="true">
+        <el-form-item label="供应商名称" prop="supplierName">
+          <el-input v-model="supplierQuery.supplierName" placeholder="请输入供应商名称" clearable @keyup.enter.native="handleSupplierQuery" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSupplierQuery">搜索</el-button>
+          <el-button icon="el-icon-refresh" size="mini" @click="resetSupplierQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
+      <el-table
+        v-loading="supplierLoading"
+        :data="supplierList"
+        highlight-current-row
+        @current-change="handleSupplierCurrentChange"
+        @row-dblclick="handleSupplierDblClick"
+        max-height="400"
+      >
+        <el-table-column label="供应商编码" prop="supplierCode" />
+        <el-table-column label="供应商名称" prop="supplierName" />
+        <el-table-column label="联系人" prop="contact" />
+        <el-table-column label="联系电话" prop="phone" />
+        <el-table-column label="操作" width="80" align="center" fixed="right">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-check"
+              circle
+              @click="handleSelectSupplier(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="supplierTotal>0"
+        :total="supplierTotal"
+        :page.sync="supplierQuery.pageNum"
+        :limit.sync="supplierQuery.pageSize"
+        @pagination="getSupplierListForDialog"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleSupplierConfirm">确 定</el-button>
+        <el-button @click="supplierDialogOpen = false">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 选择采购订单对话框 -->
+    <el-dialog title="选择采购订单" :visible.sync="purchaseOrderDialogOpen" width="900px" :modal-append-to-body="true" :close-on-click-modal="false" append-to-body>
+      <el-form :model="purchaseOrderQuery" size="small" :inline="true">
+        <el-form-item label="订单编号" prop="orderNo">
+          <el-input v-model="purchaseOrderQuery.orderNo" placeholder="请输入订单编号" clearable @keyup.enter.native="handlePurchaseOrderQuery" />
+        </el-form-item>
+        <el-form-item label="供应商名称" prop="supplierName">
+          <el-input v-model="purchaseOrderQuery.supplierName" placeholder="请输入供应商名称" clearable @keyup.enter.native="handlePurchaseOrderQuery" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="handlePurchaseOrderQuery">搜索</el-button>
+          <el-button icon="el-icon-refresh" size="mini" @click="resetPurchaseOrderQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
+      <el-table
+        v-loading="purchaseOrderLoading"
+        :data="purchaseOrderList"
+        highlight-current-row
+        @current-change="handlePurchaseOrderCurrentChange"
+        @row-dblclick="handlePurchaseOrderDblClick"
+        max-height="400"
+      >
+        <el-table-column label="订单编号" prop="orderNo" />
+        <el-table-column label="订单日期" prop="orderDate" width="100">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="供应商编码" prop="supplierCode" width="120" />
+        <el-table-column label="供应商名称" prop="supplierName" width="180" />
+        <el-table-column label="订单数量" prop="totalQty" width="80" />
+        <el-table-column label="金额合计" prop="totalAmount" width="100" />
+        <el-table-column label="订单状态" prop="orderStatus" width="80">
+          <template slot-scope="scope">
+            <span v-if="scope.row.orderStatus === 1" style="color: green;">完成</span>
+            <span v-else style="color: orange;">草稿</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="80" align="center" fixed="right">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-check"
+              circle
+              @click="handleSelectPurchaseOrder(scope.row)"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="purchaseOrderTotal>0"
+        :total="purchaseOrderTotal"
+        :page.sync="purchaseOrderQuery.pageNum"
+        :limit.sync="purchaseOrderQuery.pageSize"
+        @pagination="getPurchaseOrderListForDialog"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handlePurchaseOrderConfirm">确 定</el-button>
+        <el-button @click="purchaseOrderDialogOpen = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { listInbound, getInbound, delInbound, addInbound, updateInbound, exportInbound, finishInbound, checkFinished } from "@/api/wms/inbound"
-import { allSupplier } from "@/api/wms/supplier"
 import { allWarehouse } from "@/api/wms/warehouse"
+import { listSupplier } from "@/api/wms/supplier"
 import { listProduct } from "@/api/wms/product"
+import { listPurchaseOrder, getPurchaseOrder } from "@/api/wms/purchaseOrder"
 
 export default {
   name: "Inbound",
@@ -438,7 +570,6 @@ export default {
       inboundList: [],
       open: false,
       title: "",
-      supplierOptions: [],
       warehouseOptions: [],
       productOptions: [],
       queryParams: {
@@ -446,9 +577,9 @@ export default {
         pageSize: 10,
         inboundNo: undefined,
         inboundType: undefined,
-        supplierId: undefined,
         status: undefined,
-        isFinished: undefined
+        isFinished: undefined,
+        dateRange: []
       },
       form: {
         items: [],
@@ -471,6 +602,29 @@ export default {
       },
       selectedProduct: null,
       currentItemIndex: -1,
+      // 供应商选择相关
+      supplierDialogOpen: false,
+      supplierLoading: false,
+      supplierTotal: 0,
+      supplierList: [],
+      supplierQuery: {
+        pageNum: 1,
+        pageSize: 10,
+        supplierName: undefined
+      },
+      selectedSupplier: null,
+      // 采购订单选择相关
+      purchaseOrderDialogOpen: false,
+      purchaseOrderLoading: false,
+      purchaseOrderTotal: 0,
+      purchaseOrderList: [],
+      purchaseOrderQuery: {
+        pageNum: 1,
+        pageSize: 10,
+        orderNo: undefined,
+        supplierName: undefined
+      },
+      selectedPurchaseOrder: null,
       // 查看详情相关
       viewOpen: false,
       viewForm: {
@@ -479,34 +633,42 @@ export default {
     }
   },
   created() {
+    // 初始化日期范围为最近一个月
+    const endDate = new Date()
+    const startDate = new Date()
+    startDate.setMonth(startDate.getMonth() - 1)
+    this.queryParams.dateRange = [
+      this.formatDate(startDate),
+      this.formatDate(endDate)
+    ]
     this.getList()
-    this.getSupplierList()
     this.getWarehouseList()
-    this.getProductOptions()
   },
   methods: {
     getList() {
       this.loading = true
-      listInbound(this.queryParams).then(response => {
+      // 处理日期范围参数
+      let params = {}
+      if (this.queryParams.dateRange && this.queryParams.dateRange.length === 2) {
+        params.beginTime = this.queryParams.dateRange[0]
+        params.endTime = this.queryParams.dateRange[1]
+      }
+      // 合并其他查询参数
+      Object.keys(this.queryParams).forEach(key => {
+        if (key !== 'dateRange' && this.queryParams[key] !== undefined && this.queryParams[key] !== '') {
+          params[key] = this.queryParams[key]
+        }
+      })
+      console.log('请求参数:', params)
+      listInbound(params).then(response => {
         this.inboundList = response.rows
         this.total = response.total
         this.loading = false
       })
     },
-    getSupplierList() {
-      allSupplier().then(response => {
-        this.supplierOptions = response.data
-      })
-    },
     getWarehouseList() {
       allWarehouse().then(response => {
         this.warehouseOptions = response.data || []
-      })
-    },
-    // 获取物料下拉列表
-    getProductOptions() {
-      listProduct({ pageNum: 1, pageSize: 1000 }).then(response => {
-        this.productOptions = response.rows || []
       })
     },
     // 获取物料列表（用于选择对话框）
@@ -569,6 +731,60 @@ export default {
       this.productDialogOpen = false
       this.currentItemIndex = -1
     },
+    // 打开供应商选择对话框
+    handleOpenSupplierDialog() {
+      this.selectedSupplier = null
+      this.supplierQuery = {
+        pageNum: 1,
+        pageSize: 10,
+        supplierName: undefined
+      }
+      this.getSupplierListForDialog()
+      this.supplierDialogOpen = true
+    },
+    // 获取供应商列表（用于选择对话框）
+    getSupplierListForDialog() {
+      this.supplierLoading = true
+      listSupplier(this.supplierQuery).then(response => {
+        this.supplierList = response.rows
+        this.supplierTotal = response.total
+        this.supplierLoading = false
+      })
+    },
+    handleSupplierQuery() {
+      this.supplierQuery.pageNum = 1
+      this.getSupplierListForDialog()
+    },
+    resetSupplierQuery() {
+      this.supplierQuery = {
+        pageNum: 1,
+        pageSize: 10,
+        supplierName: undefined
+      }
+      this.getSupplierListForDialog()
+    },
+    // 供应商行选择变化
+    handleSupplierCurrentChange(val) {
+      this.selectedSupplier = val
+    },
+    // 双击行确认选择
+    handleSupplierDblClick(row) {
+      this.handleSelectSupplier(row)
+    },
+    // 选择供应商
+    handleSelectSupplier(supplier) {
+      this.selectedSupplier = supplier
+      this.handleSupplierConfirm()
+    },
+    handleSupplierConfirm() {
+      if (!this.selectedSupplier) {
+        this.$modal.msgWarning("请选择供应商")
+        return
+      }
+      this.form.supplierId = this.selectedSupplier.supplierId
+      this.form.supplierName = this.selectedSupplier.supplierName
+      this.supplierDialogOpen = false
+    },
     cancel() {
       this.open = false
       this.reset()
@@ -580,8 +796,7 @@ export default {
         inboundType: "1",
         sourceType: undefined,
         sourceNo: undefined,
-        supplierId: undefined,
-        supplierName: undefined,
+        purchaseOrderNo: undefined,
         warehouseId: undefined,
         status: "0",
         expectedDate: undefined,
@@ -596,6 +811,14 @@ export default {
     },
     resetQuery() {
       this.resetForm("queryForm")
+      // 重置日期范围为最近一个月
+      const endDate = new Date()
+      const startDate = new Date()
+      startDate.setMonth(startDate.getMonth() - 1)
+      this.queryParams.dateRange = [
+        this.formatDate(startDate),
+        this.formatDate(endDate)
+      ]
       this.handleQuery()
     },
     handleAdd() {
@@ -620,10 +843,95 @@ export default {
       this.form.items.splice(index, 1)
     },
     handleInboundTypeChange() {
-      // 入库类型改变时的处理
+      // 入库类型改变时，如果不是采购入库，清空采购订单选择
+      if (this.form.inboundType !== '1') {
+        this.form.sourceNo = undefined
+        this.form.purchaseOrderNo = undefined
+        this.form.supplierId = undefined
+        this.form.supplierName = undefined
+        this.form.items = []
+      }
     },
-    handleSupplierChange() {
-      // 供应商改变时的处理
+    // 打开采购订单选择对话框
+    handleOpenPurchaseOrderDialog() {
+      this.selectedPurchaseOrder = null
+      this.purchaseOrderQuery = {
+        pageNum: 1,
+        pageSize: 10,
+        orderNo: undefined,
+        supplierName: undefined
+      }
+      this.getPurchaseOrderListForDialog()
+      this.purchaseOrderDialogOpen = true
+    },
+    // 获取采购订单列表（用于选择对话框）
+    getPurchaseOrderListForDialog() {
+      this.purchaseOrderLoading = true
+      // 只查询已完成的采购订单
+      this.purchaseOrderQuery.orderStatus = '1'
+      listPurchaseOrder(this.purchaseOrderQuery).then(response => {
+        this.purchaseOrderList = response.rows
+        this.purchaseOrderTotal = response.total
+        this.purchaseOrderLoading = false
+      })
+    },
+    handlePurchaseOrderQuery() {
+      this.purchaseOrderQuery.pageNum = 1
+      this.getPurchaseOrderListForDialog()
+    },
+    resetPurchaseOrderQuery() {
+      this.purchaseOrderQuery = {
+        pageNum: 1,
+        pageSize: 10,
+        orderNo: undefined,
+        supplierName: undefined
+      }
+      this.getPurchaseOrderListForDialog()
+    },
+    // 采购订单行选择变化
+    handlePurchaseOrderCurrentChange(val) {
+      this.selectedPurchaseOrder = val
+    },
+    // 双击行确认选择
+    handlePurchaseOrderDblClick(row) {
+      this.handleSelectPurchaseOrder(row)
+    },
+    // 选择采购订单
+    handleSelectPurchaseOrder(order) {
+      this.selectedPurchaseOrder = order
+      // 获取采购订单详情（包含明细）
+      getPurchaseOrder(order.orderId).then(response => {
+        this.selectedPurchaseOrder = response.data
+        this.handlePurchaseOrderConfirm()
+      })
+    },
+    handlePurchaseOrderConfirm() {
+      if (!this.selectedPurchaseOrder) {
+        this.$modal.msgWarning("请选择采购订单")
+        return
+      }
+      // 设置采购订单信息
+      this.form.sourceNo = this.selectedPurchaseOrder.orderNo
+      this.form.purchaseOrderNo = this.selectedPurchaseOrder.orderNo
+      this.form.supplierId = this.selectedPurchaseOrder.supplierId
+      this.form.supplierCode = this.selectedPurchaseOrder.supplierCode
+      this.form.supplierName = this.selectedPurchaseOrder.supplierName
+      this.form.expectedDate = this.selectedPurchaseOrder.requiredDate
+
+      // 复制采购订单明细到入库明细
+      if (this.selectedPurchaseOrder.items && this.selectedPurchaseOrder.items.length > 0) {
+        this.form.items = this.selectedPurchaseOrder.items.map(item => ({
+          productId: item.productId,
+          productCode: item.productCode,
+          productName: item.productName,
+          unit: item.unit || '',
+          expectedQty: item.quantity,
+          batchNo: '',
+          status: '0'
+        }))
+      }
+
+      this.purchaseOrderDialogOpen = false
     },
     // 打开物料选择对话框
     handleOpenProductDialog(index) {
@@ -713,12 +1021,10 @@ export default {
           // 计算总数量
           this.form.totalQty = totalQty
 
-          // 获取供应商名称
-          if (this.form.supplierId) {
-            const supplier = this.supplierOptions.find(s => s.supplierId === this.form.supplierId)
-            if (supplier) {
-              this.form.supplierName = supplier.supplierName
-            }
+          // 如果是采购入库，设置来源类型和来源单号
+          if (this.form.inboundType === '1') {
+            this.form.sourceType = '1' // 1 表示采购订单
+            // sourceNo 和 purchaseOrderNo 已经在选择采购订单时设置
           }
 
           // 如果是新增入库单，询问是否直接完成
@@ -767,9 +1073,23 @@ export default {
       }).catch(() => {})
     },
     handleExport() {
-      this.download('wms/inbound/export', {
+      // 处理日期范围参数
+      const params = {
         ...this.queryParams
-      }, `inbound_${new Date().getTime()}.xlsx`)
+      }
+      if (params.dateRange && params.dateRange.length === 2) {
+        params.beginTime = params.dateRange[0]
+        params.endTime = params.dateRange[1]
+        delete params.dateRange
+      }
+      this.download('wms/inbound/export', params, `inbound_${new Date().getTime()}.xlsx`)
+    },
+    // 格式化日期为 yyyy-MM-dd
+    formatDate(date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
     }
   }
 }

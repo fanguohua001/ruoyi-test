@@ -255,6 +255,34 @@ public class WmsInventoryLedger extends BaseEntity
         this.remark = remark;
     }
 
+    /** 开始时间（用于日期范围查询） */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date beginTime;
+
+    /** 结束时间（用于日期范围查询） */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date endTime;
+
+    public Date getBeginTime()
+    {
+        return beginTime;
+    }
+
+    public void setBeginTime(Date beginTime)
+    {
+        this.beginTime = beginTime;
+    }
+
+    public Date getEndTime()
+    {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime)
+    {
+        this.endTime = endTime;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

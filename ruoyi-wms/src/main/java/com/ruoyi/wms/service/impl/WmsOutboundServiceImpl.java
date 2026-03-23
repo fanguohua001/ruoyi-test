@@ -91,6 +91,17 @@ public class WmsOutboundServiceImpl implements IWmsOutboundService
             for (WmsOutboundItem item : items)
             {
                 item.setOutboundId(wmsOutboundOrder.getOutboundId());
+
+                // 默认已拣货数量、已发货数量等于订单数量
+                if (item.getOrderQty() != null) {
+                    if (item.getPickedQty() == null) {
+                        item.setPickedQty(item.getOrderQty());
+                    }
+                    if (item.getShippedQty() == null) {
+                        item.setShippedQty(item.getOrderQty());
+                    }
+                }
+
                 wmsOutboundMapper.insertWmsOutboundItem(item);
             }
         }

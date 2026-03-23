@@ -13,7 +13,9 @@
       "Bash(cd E:/MyDocNew/RuoYiNew/ruoyi-ui && npm run dev)",
       "Bash(mysql:*)",
       "Bash(mvn compile:*)",
-      "Bash(xargs -I {} basename {} .class)"
+      "Bash(xargs -I {} basename {} .class)",
+      "Bash(git commit:*)",
+      "Bash(git add:*)"
     ]
   }
 }

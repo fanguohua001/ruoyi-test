@@ -305,6 +305,53 @@ public class WmsInventoryServiceImpl implements IWmsInventoryService
     }
 
     /**
+     * 增加库存（带履历记录）- 调试版本
+     */
+    public int increaseStockWithLedgerDebug(WmsInventory wmsInventory, BigDecimal qty,
+                                        String referenceType, Long referenceId, String referenceNo)
+    {
+        System.out.println("=== 开始增加库存 ===");
+        System.out.println("Product ID: " + wmsInventory.getProductId());
+        System.out.println("Warehouse ID: " + wmsInventory.getWarehouseId());
+        System.out.println("Location ID: " + wmsInventory.getLocationId());
+        System.out.println("Quantity: " + qty);
+        System.out.println("Reference: " + referenceType + " / " + referenceId + " / " + referenceNo);
+
+        int result = increaseStock(wmsInventory, qty);
+        System.out.println("库存更新结果：" + result);
+
+        WmsInventory inventory = wmsInventoryMapper.selectInventoryByParams(
+            wmsInventory.getProductId(),
+            wmsInventory.getWarehouseId(),
+            wmsInventory.getLocationId(),
+            wmsInventory.getBatchNo()
+        );
+
+        if (inventory == null) {
+            inventory = wmsInventory;
+        }
+
+        inventoryLedgerService.recordTransaction(
+            "1",
+            inventory.getWarehouseId(),
+            inventory.getLocationId(),
+            inventory.getProductId(),
+            inventory.getProductCode(),
+            inventory.getProductName(),
+            inventory.getBatchNo(),
+            qty,
+            inventory.getUnitCost() != null ? inventory.getUnitCost() : BigDecimal.ZERO,
+            referenceType,
+            referenceId,
+            referenceNo,
+            "入库单增加库存"
+        );
+
+        System.out.println("=== 库存增加完成 ===");
+        return result;
+    }
+
+    /**
      * 出库减少库存（带履历记录）
      *
      * @param wmsInventory 库存信息

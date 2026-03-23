@@ -40,6 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="productId != null "> and product_id = #{productId}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectStockCheckById" parameterType="Long" resultMap="WmsStockCheckResult">

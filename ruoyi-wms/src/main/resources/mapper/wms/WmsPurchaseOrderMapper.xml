@@ -2,19 +2,19 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.wms.mapper.WmsCustomerOrderMapper">
+<mapper namespace="com.ruoyi.wms.mapper.WmsPurchaseOrderMapper">
 
-    <resultMap type="WmsCustomerOrder" id="WmsCustomerOrderResult">
+    <resultMap type="WmsPurchaseOrder" id="WmsPurchaseOrderResult">
         <result property="orderId"    column="order_id"    />
         <result property="orderNo"    column="order_no"    />
-        <result property="customerCode"    column="customer_code"    />
-        <result property="customerName"    column="customer_name"    />
         <result property="orderDate"    column="order_date"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierCode"    column="supplier_code"    />
+        <result property="supplierName"    column="supplier_name"    />
         <result property="requiredDate"    column="required_date"    />
         <result property="totalQty"    column="total_qty"    />
         <result property="totalAmount"    column="total_amount"    />
         <result property="orderStatus"    column="order_status"    />
-        <result property="shipStatus"    column="ship_status"    />
         <result property="remark"    column="remark"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
@@ -22,159 +22,177 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
-    <resultMap type="WmsCustomerOrderItem" id="WmsCustomerOrderItemResult">
+    <resultMap type="WmsPurchaseOrderItem" id="WmsPurchaseOrderItemResult">
         <result property="itemId"    column="item_id"    />
         <result property="orderId"    column="order_id"    />
+        <result property="lineNo"    column="line_no"    />
+        <result property="productId"    column="product_id"    />
         <result property="productCode"    column="product_code"    />
         <result property="productName"    column="product_name"    />
-        <result property="unitPrice"    column="unit_price"    />
+        <result property="unit"    column="unit"    />
         <result property="quantity"    column="quantity"    />
+        <result property="unitPrice"    column="unit_price"    />
         <result property="amount"    column="amount"    />
         <result property="taxRate"    column="tax_rate"    />
         <result property="unitPriceTax"    column="unit_price_tax"    />
         <result property="amountTax"    column="amount_tax"    />
-        <result property="remark"    column="item_remark"    />
+        <result property="remark"    column="remark"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
-    <sql id="selectCustomerOrderVo">
-        select order_id, order_no, customer_code, customer_name, order_date, required_date, total_qty, total_amount, order_status, ship_status, remark, create_by, create_time, update_by, update_time from wms_customer_order
+    <sql id="selectPurchaseOrderVo">
+        select order_id, order_no, order_date, supplier_id, supplier_code, supplier_name, required_date,
+               total_qty, total_amount, order_status, remark, create_by, create_time, update_by, update_time
+        from wms_purchase_order
     </sql>
 
-    <select id="selectCustomerOrderList" parameterType="WmsCustomerOrder" resultMap="WmsCustomerOrderResult">
-        <include refid="selectCustomerOrderVo"/>
+    <!-- 采购订单列表查询（不联查明细，提升性能） -->
+    <select id="selectPurchaseOrderList" parameterType="WmsPurchaseOrder" resultMap="WmsPurchaseOrderResult">
+        SELECT
+            o.order_id, o.order_no, o.order_date, o.supplier_id, o.supplier_code, o.supplier_name,
+            o.required_date, o.total_qty, o.total_amount, o.order_status, o.remark,
+            o.create_by, o.create_time, o.update_by, o.update_time
+        FROM wms_purchase_order o
         <where>
-            <if test="orderNo != null  and orderNo != ''"> and order_no like concat('%', #{orderNo}, '%')</if>
-            <if test="customerCode != null  and customerCode != ''"> and customer_code like concat('%', #{customerCode}, '%')</if>
-            <if test="customerName != null  and customerName != ''"> and customer_name like concat('%', #{customerName}, '%')</if>
-            <if test="orderStatus != null "> and order_status = #{orderStatus}</if>
-            <if test="shipStatus != null  and shipStatus != ''"> and ship_status = #{shipStatus}</if>
+            <if test="orderNo != null  and orderNo != ''"> and o.order_no = #{orderNo}</if>
+            <if test="supplierId != null "> and o.supplier_id = #{supplierId}</if>
+            <if test="supplierCode != null  and supplierCode != ''"> and o.supplier_code = #{supplierCode}</if>
+            <if test="supplierName != null  and supplierName != ''"> and o.supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="orderStatus != null  and orderStatus != ''"> and o.order_status = #{orderStatus}</if>
+            <if test="beginTime != null"> and o.create_time &gt;= #{beginTime}</if>
+            <if test="endTime != null"> and o.create_time &lt;= DATE_ADD(#{endTime}, INTERVAL 1 DAY)</if>
         </where>
-        ORDER BY create_time DESC
+        ORDER BY o.create_time DESC
     </select>
 
-    <select id="selectCustomerOrderById" parameterType="Long" resultMap="WmsCustomerOrderResult">
-        <include refid="selectCustomerOrderVo"/>
+    <select id="selectPurchaseOrderById" parameterType="Long" resultMap="WmsPurchaseOrderResult">
+        <include refid="selectPurchaseOrderVo"/>
         where order_id = #{orderId}
     </select>
 
-    <select id="checkOrderNoUnique" parameterType="String" resultMap="WmsCustomerOrderResult">
-        <include refid="selectCustomerOrderVo"/>
+    <select id="checkOrderNoUnique" parameterType="String" resultMap="WmsPurchaseOrderResult">
+        <include refid="selectPurchaseOrderVo"/>
         where order_no = #{orderNo}
     </select>
 
-    <select id="selectCustomerOrderItemByOrderId" parameterType="Long" resultMap="WmsCustomerOrderItemResult">
-        select item_id, order_id, product_code, product_name, unit_price, quantity, amount, tax_rate, unit_price_tax, amount_tax, remark, create_by, create_time, update_by, update_time from wms_customer_order_item where order_id = #{orderId}
+    <select id="selectPurchaseOrderItemByOrderId" parameterType="Long" resultMap="WmsPurchaseOrderItemResult">
+        select i.item_id, i.order_id, i.line_no, i.product_id, i.product_code, i.product_name, p.unit, i.quantity, i.unit_price, i.amount, i.tax_rate, i.unit_price_tax, i.amount_tax, i.remark, i.create_by, i.create_time, i.update_by, i.update_time
+        from wms_purchase_order_item i
+        left join wms_product p on i.product_id = p.product_id
+        where i.order_id = #{orderId}
+        order by i.line_no
     </select>
 
-    <select id="selectCustomerOrderItemByItemId" parameterType="Long" resultMap="WmsCustomerOrderItemResult">
-        select item_id, order_id, product_code, product_name, unit_price, quantity, amount, tax_rate, unit_price_tax, amount_tax, remark, create_by, create_time, update_by, update_time from wms_customer_order_item where item_id = #{itemId}
+    <select id="selectPurchaseOrderItemByItemId" parameterType="Long" resultMap="WmsPurchaseOrderItemResult">
+        select item_id, order_id, line_no, product_id, product_code, product_name, quantity, unit_price, amount, tax_rate, unit_price_tax, amount_tax, remark, create_by, create_time, update_by, update_time from wms_purchase_order_item where item_id = #{itemId}
     </select>
 
-    <insert id="insertCustomerOrder" parameterType="WmsCustomerOrder" useGeneratedKeys="true" keyProperty="orderId">
-        insert into wms_customer_order
+    <insert id="insertPurchaseOrder" parameterType="WmsPurchaseOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into wms_purchase_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="orderNo != null and orderNo != ''">order_no,</if>
-            <if test="customerCode != null and customerCode != ''">customer_code,</if>
-            <if test="customerName != null">customer_name,</if>
             <if test="orderDate != null">order_date,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="supplierCode != null">supplier_code,</if>
+            <if test="supplierName != null">supplier_name,</if>
             <if test="requiredDate != null">required_date,</if>
             <if test="totalQty != null">total_qty,</if>
             <if test="totalAmount != null">total_amount,</if>
             <if test="orderStatus != null">order_status,</if>
-            <if test="shipStatus != null">ship_status,</if>
             <if test="createBy != null and createBy != ''">create_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="remark != null">remark,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderNo != null and orderNo != ''">#{orderNo},</if>
-            <if test="customerCode != null and customerCode != ''">#{customerCode},</if>
-            <if test="customerName != null">#{customerName},</if>
             <if test="orderDate != null">#{orderDate},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="supplierCode != null">#{supplierCode},</if>
+            <if test="supplierName != null">#{supplierName},</if>
             <if test="requiredDate != null">#{requiredDate},</if>
             <if test="totalQty != null">#{totalQty},</if>
             <if test="totalAmount != null">#{totalAmount},</if>
             <if test="orderStatus != null">#{orderStatus},</if>
-            <if test="shipStatus != null">#{shipStatus},</if>
             <if test="createBy != null and createBy != ''">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="remark != null">#{remark},</if>
          </trim>
     </insert>
 
-    <update id="updateCustomerOrder" parameterType="WmsCustomerOrder">
-        update wms_customer_order
+    <update id="updatePurchaseOrder" parameterType="WmsPurchaseOrder">
+        update wms_purchase_order
         <trim prefix="SET" suffixOverrides=",">
-            <if test="customerCode != null and customerCode != ''">customer_code = #{customerCode},</if>
-            <if test="customerName != null">customer_name = #{customerName},</if>
+            <if test="orderNo != null and orderNo != ''">order_no = #{orderNo},</if>
             <if test="orderDate != null">order_date = #{orderDate},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="supplierCode != null">supplier_code = #{supplierCode},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
             <if test="requiredDate != null">required_date = #{requiredDate},</if>
             <if test="totalQty != null">total_qty = #{totalQty},</if>
             <if test="totalAmount != null">total_amount = #{totalAmount},</if>
             <if test="orderStatus != null">order_status = #{orderStatus},</if>
-            <if test="shipStatus != null">ship_status = #{shipStatus},</if>
+            <if test="remark != null">remark = #{remark},</if>
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="remark != null">remark = #{remark},</if>
         </trim>
         where order_id = #{orderId}
     </update>
 
-    <delete id="deleteCustomerOrderById" parameterType="Long">
-        delete from wms_customer_order where order_id = #{orderId}
+    <delete id="deletePurchaseOrderById" parameterType="Long">
+        delete from wms_purchase_order where order_id = #{orderId}
     </delete>
 
-    <delete id="deleteCustomerOrderByIds" parameterType="String">
-        delete from wms_customer_order where order_id in
+    <delete id="deletePurchaseOrderByIds" parameterType="String">
+        delete from wms_purchase_order where order_id in
         <foreach item="orderId" collection="array" open="(" separator="," close=")">
             #{orderId}
         </foreach>
     </delete>
 
-    <insert id="insertCustomerOrderItem" parameterType="WmsCustomerOrderItem" useGeneratedKeys="true" keyProperty="itemId">
-        insert into wms_customer_order_item
+    <insert id="insertPurchaseOrderItem" parameterType="WmsPurchaseOrderItem" useGeneratedKeys="true" keyProperty="itemId">
+        insert into wms_purchase_order_item
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="orderId != null">order_id,</if>
-            <if test="productCode != null and productCode != ''">product_code,</if>
+            <if test="lineNo != null">line_no,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="productCode != null">product_code,</if>
             <if test="productName != null">product_name,</if>
-            <if test="unitPrice != null">unit_price,</if>
             <if test="quantity != null">quantity,</if>
+            <if test="unitPrice != null">unit_price,</if>
             <if test="amount != null">amount,</if>
             <if test="taxRate != null">tax_rate,</if>
             <if test="unitPriceTax != null">unit_price_tax,</if>
             <if test="amountTax != null">amount_tax,</if>
             <if test="remark != null">remark,</if>
-            <if test="createBy != null and createBy != ''">create_by,</if>
-            <if test="createTime != null">create_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderId != null">#{orderId},</if>
-            <if test="productCode != null and productCode != ''">#{productCode},</if>
+            <if test="lineNo != null">#{lineNo},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="productCode != null">#{productCode},</if>
             <if test="productName != null">#{productName},</if>
-            <if test="unitPrice != null">#{unitPrice},</if>
             <if test="quantity != null">#{quantity},</if>
+            <if test="unitPrice != null">#{unitPrice},</if>
             <if test="amount != null">#{amount},</if>
             <if test="taxRate != null">#{taxRate},</if>
             <if test="unitPriceTax != null">#{unitPriceTax},</if>
             <if test="amountTax != null">#{amountTax},</if>
             <if test="remark != null">#{remark},</if>
-            <if test="createBy != null and createBy != ''">#{createBy},</if>
-            <if test="createTime != null">#{createTime},</if>
          </trim>
     </insert>
 
-    <update id="updateCustomerOrderItem" parameterType="WmsCustomerOrderItem">
-        update wms_customer_order_item
+    <update id="updatePurchaseOrderItem" parameterType="WmsPurchaseOrderItem">
+        update wms_purchase_order_item
         <trim prefix="SET" suffixOverrides=",">
-            <if test="orderId != null">order_id = #{orderId},</if>
-            <if test="productCode != null and productCode != ''">product_code = #{productCode},</if>
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
             <if test="productName != null">product_name = #{productName},</if>
-            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
             <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
             <if test="amount != null">amount = #{amount},</if>
             <if test="taxRate != null">tax_rate = #{taxRate},</if>
             <if test="unitPriceTax != null">unit_price_tax = #{unitPriceTax},</if>
@@ -186,15 +204,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where item_id = #{itemId}
     </update>
 
-    <delete id="deleteCustomerOrderItemByIds" parameterType="String">
-        delete from wms_customer_order_item where item_id in
+    <delete id="deletePurchaseOrderItemByIds" parameterType="String">
+        delete from wms_purchase_order_item where item_id in
         <foreach item="itemId" collection="array" open="(" separator="," close=")">
             #{itemId}
         </foreach>
     </delete>
 
-    <delete id="deleteCustomerOrderItemByOrderId" parameterType="Long">
-        delete from wms_customer_order_item where order_id = #{orderId}
+    <delete id="deletePurchaseOrderItemByOrderId" parameterType="Long">
+        delete from wms_purchase_order_item where order_id = #{orderId}
     </delete>
 
 </mapper>

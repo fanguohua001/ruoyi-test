@@ -34,6 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="category != null  and category != ''"> and category = #{category}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
         </where>
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectProductById" parameterType="Long" resultMap="WmsProductResult">

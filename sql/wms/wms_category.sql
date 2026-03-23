@@ -10,7 +10,7 @@ CREATE TABLE `wms_category` (
   `order_num` int(4) DEFAULT '0' COMMENT '排序',
   `status` char(1) DEFAULT '0' COMMENT '状态（0 正常 1 停用）',
   `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) DEFAULT NULL COMMENT '备注',

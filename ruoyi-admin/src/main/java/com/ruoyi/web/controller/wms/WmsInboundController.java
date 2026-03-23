@@ -1,6 +1,8 @@
 package com.ruoyi.web.controller.wms;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Calendar;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.wms.domain.WmsInboundOrder;
 import com.ruoyi.wms.service.IWmsInboundService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.common.utils.DateUtils;
 
 /**
  * 入库单 Controller
@@ -39,8 +42,32 @@ public class WmsInboundController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('wms:inbound:list')")
     @GetMapping("/list")
-    public TableDataInfo list(WmsInboundOrder wmsInboundOrder)
+    public TableDataInfo list(WmsInboundOrder wmsInboundOrder,
+                              @RequestParam(required = false) String beginTime,
+                              @RequestParam(required = false) String endTime)
     {
+        // 处理日期范围查询参数
+        if (beginTime != null && !beginTime.isEmpty()) {
+            try {
+                wmsInboundOrder.setStartTime(DateUtils.parseDate(beginTime));
+            } catch (Exception e) {
+                // 日期格式错误，忽略
+            }
+        }
+        if (endTime != null && !endTime.isEmpty()) {
+            try {
+                // 将结束时间设置为当天的 23:59:59，以便包含整天
+                Date endDate = DateUtils.parseDate(endTime);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                wmsInboundOrder.setEndTime(calendar.getTime());
+            } catch (Exception e) {
+                // 日期格式错误，忽略
+            }
+        }
         startPage();
         List<WmsInboundOrder> list = wmsInboundService.selectWmsInboundOrderList(wmsInboundOrder);
         return getDataTable(list);
@@ -52,8 +79,31 @@ public class WmsInboundController extends BaseController
     @PreAuthorize("@ss.hasPermi('wms:inbound:export')")
     @Log(title = "入库管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, WmsInboundOrder wmsInboundOrder)
+    public void export(HttpServletResponse response, WmsInboundOrder wmsInboundOrder,
+                       @RequestParam(required = false) String beginTime,
+                       @RequestParam(required = false) String endTime)
     {
+        // 处理日期范围查询参数
+        if (beginTime != null && !beginTime.isEmpty()) {
+            try {
+                wmsInboundOrder.setStartTime(DateUtils.parseDate(beginTime));
+            } catch (Exception e) {
+                // 日期格式错误，忽略
+            }
+        }
+        if (endTime != null && !endTime.isEmpty()) {
+            try {
+                Date endDate = DateUtils.parseDate(endTime);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(endDate);
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                wmsInboundOrder.setEndTime(calendar.getTime());
+            } catch (Exception e) {
+                // 日期格式错误，忽略
+            }
+        }
         List<WmsInboundOrder> list = wmsInboundService.selectWmsInboundOrderList(wmsInboundOrder);
         ExcelUtil<WmsInboundOrder> util = new ExcelUtil<WmsInboundOrder>(WmsInboundOrder.class);
         util.exportExcel(response, list, "入库单数据");

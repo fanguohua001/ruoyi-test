@@ -84,6 +84,12 @@ public class WmsInboundOrder extends BaseEntity
     @Excel(name = "实际到货日期", width = 30, dateFormat = "yyyy-MM-dd")
     private Date actualDate;
 
+    /** 开始创建时间 */
+    private Date startTime;
+
+    /** 结束创建时间 */
+    private Date endTime;
+
     /** 入库明细列表 */
     private List<WmsInboundItem> items;
 
@@ -245,6 +251,26 @@ public class WmsInboundOrder extends BaseEntity
     public void setActualDate(Date actualDate)
     {
         this.actualDate = actualDate;
+    }
+
+    public Date getStartTime()
+    {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime)
+    {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime()
+    {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime)
+    {
+        this.endTime = endTime;
     }
 
     public List<WmsInboundItem> getItems()

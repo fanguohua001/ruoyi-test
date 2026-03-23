@@ -65,4 +65,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where biz_type = #{bizType}
     </update>
 
+    <!-- 更新序号当前值 -->
+    <update id="updateSequenceCurrentSeq" parameterType="java.lang.Long">
+        update wms_sequence
+        set current_seq = #{currentSeq,jdbcType=BIGINT},
+            update_time = now()
+        where sequence_id = #{sequenceId,jdbcType=BIGINT}
+    </update>
+
 </mapper>

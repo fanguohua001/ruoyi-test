@@ -10,8 +10,10 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.wms.domain.WmsInboundOrder;
 import com.ruoyi.wms.domain.WmsInboundItem;
 import com.ruoyi.wms.domain.WmsInventory;
+import com.ruoyi.wms.domain.WmsLocation;
 import com.ruoyi.wms.mapper.WmsInboundMapper;
 import com.ruoyi.wms.mapper.WmsInventoryMapper;
+import com.ruoyi.wms.mapper.WmsLocationMapper;
 import com.ruoyi.wms.service.IWmsInboundService;
 import com.ruoyi.wms.service.IWmsInventoryService;
 import com.ruoyi.wms.service.IWmsSequenceService;
@@ -29,6 +31,9 @@ public class WmsInboundServiceImpl implements IWmsInboundService
 
     @Autowired
     private WmsInventoryMapper wmsInventoryMapper;
+
+    @Autowired
+    private WmsLocationMapper wmsLocationMapper;
 
     @Autowired
     private IWmsSequenceService sequenceService;
@@ -62,12 +67,7 @@ public class WmsInboundServiceImpl implements IWmsInboundService
     @Override
     public List<WmsInboundOrder> selectWmsInboundOrderList(WmsInboundOrder wmsInboundOrder)
     {
-        List<WmsInboundOrder> list = wmsInboundMapper.selectInboundOrderList(wmsInboundOrder);
-        for (WmsInboundOrder order : list) {
-            List<WmsInboundItem> items = wmsInboundMapper.selectWmsInboundItemByInboundId(order.getInboundId());
-            order.setItems(items);
-        }
-        return list;
+        return wmsInboundMapper.selectInboundOrderList(wmsInboundOrder);
     }
 
     /**
@@ -84,6 +84,11 @@ public class WmsInboundServiceImpl implements IWmsInboundService
         String inboundNo = sequenceService.generateNumber("inbound");
         wmsInboundOrder.setInboundNo(inboundNo);
 
+        // 保存是否需要完成的状态
+        boolean needFinish = wmsInboundOrder.getIsFinished() != null && wmsInboundOrder.getIsFinished() == 1;
+        // 先设置为 0，插入数据
+        wmsInboundOrder.setIsFinished(0);
+
         int rows = wmsInboundMapper.insertInboundOrder(wmsInboundOrder);
         List<WmsInboundItem> items = wmsInboundOrder.getItems();
         if (StringUtils.isNotNull(items))
@@ -91,12 +96,23 @@ public class WmsInboundServiceImpl implements IWmsInboundService
             for (WmsInboundItem item : items)
             {
                 item.setInboundId(wmsInboundOrder.getInboundId());
+
+                // 默认实收数量、合格数量等于应收数量
+                if (item.getExpectedQty() != null) {
+                    if (item.getReceivedQty() == null) {
+                        item.setReceivedQty(item.getExpectedQty());
+                    }
+                    if (item.getQualifiedQty() == null) {
+                        item.setQualifiedQty(item.getExpectedQty());
+                    }
+                }
+
                 wmsInboundMapper.insertWmsInboundItem(item);
             }
         }
 
-        // 如果入库单是确认完成状态（is_finished=1），则更新库存和台账
-        if (wmsInboundOrder.getIsFinished() != null && wmsInboundOrder.getIsFinished() == 1) {
+        // 如果入库单需要完成，则调用完成方法
+        if (needFinish) {
             finishInboundOrder(wmsInboundOrder.getInboundId());
         }
 
@@ -306,10 +322,15 @@ public class WmsInboundServiceImpl implements IWmsInboundService
     @Transactional
     public int finishInboundOrder(Long inboundId)
     {
+        System.out.println("=== 开始完成入库单，ID: " + inboundId);
+
         WmsInboundOrder order = wmsInboundMapper.selectInboundOrderById(inboundId);
         if (order == null) {
             throw new RuntimeException("入库单不存在");
         }
+
+        System.out.println("入库单号：" + order.getInboundNo());
+        System.out.println("仓库 ID: " + order.getWarehouseId());
 
         // 检查是否已完成
         if (order.getIsFinished() != null && order.getIsFinished() == 1) {
@@ -322,29 +343,63 @@ public class WmsInboundServiceImpl implements IWmsInboundService
             throw new RuntimeException("入库单没有明细，无法完成");
         }
 
+        System.out.println("明细数量：" + items.size());
+
+        // 获取仓库的第一个库位作为默认库位
+        Long defaultLocationId = null;
+        WmsLocation locationQuery = new WmsLocation();
+        locationQuery.setWarehouseId(order.getWarehouseId());
+        List<WmsLocation> locations = wmsLocationMapper.selectLocationList(locationQuery);
+        if (locations != null && !locations.isEmpty()) {
+            defaultLocationId = locations.get(0).getLocationId();
+            System.out.println("默认库位 ID: " + defaultLocationId);
+        }
+
         // 遍历明细，更新库存
+        int updatedCount = 0;
         for (WmsInboundItem item : items) {
+            // 如果明细中没有库位 ID，使用默认库位
+            Long locationId = item.getLocationId() != null ? item.getLocationId() : defaultLocationId;
+
+            System.out.println("--- 处理明细 ---");
+            System.out.println("  物料 ID: " + item.getProductId());
+            System.out.println("  物料编码：" + item.getProductCode());
+            System.out.println("  应收数量：" + item.getExpectedQty());
+            System.out.println("  实收数量：" + item.getReceivedQty());
+            System.out.println("  库位 ID: " + locationId);
+
+            // 如果实收数量为 null，则使用应收数量
+            BigDecimal receivedQty = item.getReceivedQty() != null ? item.getReceivedQty() : item.getExpectedQty();
+
+            // 如果应收数量也为 null 或 0，跳过该明细
+            if (receivedQty == null || receivedQty.compareTo(BigDecimal.ZERO) <= 0) {
+                receivedQty = item.getExpectedQty();
+                if (receivedQty == null || receivedQty.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("  数量为 0，跳过");
+                    continue;
+                }
+            }
+
             WmsInventory inventory = new WmsInventory();
             inventory.setProductId(item.getProductId());
             inventory.setProductCode(item.getProductCode());
             inventory.setProductName(item.getProductName());
             inventory.setWarehouseId(order.getWarehouseId());
-            inventory.setLocationId(item.getLocationId());
-            inventory.setBatchNo(item.getBatchNo());
+            inventory.setLocationId(locationId);
+            inventory.setBatchNo(item.getBatchNo() != null ? item.getBatchNo() : "");
             inventory.setProductionDate(item.getProductionDate());
             inventory.setExpiryDate(item.getExpiryDate());
 
-            BigDecimal receivedQty = item.getReceivedQty() != null ? item.getReceivedQty() : item.getExpectedQty();
-            if (receivedQty != null && receivedQty.compareTo(BigDecimal.ZERO) > 0) {
-                // 增加库存并记录履历
-                inventoryService.increaseStockWithLedger(
-                    inventory,
-                    receivedQty,
-                    "wms_inbound_order",
-                    inboundId,
-                    order.getInboundNo()
-                );
-            }
+            // 增加库存并记录履历
+            inventoryService.increaseStockWithLedger(
+                inventory,
+                receivedQty,
+                "wms_inbound_order",
+                inboundId,
+                order.getInboundNo()
+            );
+            updatedCount++;
+            System.out.println("  库存已更新，数量：" + receivedQty);
         }
 
         // 设置为已完成
@@ -354,6 +409,8 @@ public class WmsInboundServiceImpl implements IWmsInboundService
         order.setActualDate(new Date());
         wmsInboundMapper.updateInboundOrder(order);
 
-        return 1;
+        System.out.println("=== 入库单完成，更新数量：" + updatedCount);
+
+        return updatedCount;
     }
 }

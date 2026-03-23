@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 and status = #{status}
             </if>
         </where>
-        order by order_num, category_id
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectWmsCategoryById" parameterType="Long" resultMap="WmsCategoryResult">

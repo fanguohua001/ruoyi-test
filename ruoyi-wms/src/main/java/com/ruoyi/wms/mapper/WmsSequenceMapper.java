@@ -1,5 +1,6 @@
 package com.ruoyi.wms.mapper;
 
+import org.apache.ibatis.annotations.Param;
 import com.ruoyi.wms.domain.WmsSequence;
 
 /**
@@ -26,10 +27,11 @@ public interface WmsSequenceMapper
     public int insertSequence(WmsSequence wmsSequence);
 
     /**
-     * 更新序号（自增）
+     * 更新序号当前值
      *
-     * @param bizType 业务类型
+     * @param sequenceId 序号 ID
+     * @param currentSeq 当前序号值
      * @return 结果
      */
-    public int incrementSequence(String bizType);
+    public int updateSequenceCurrentSeq(@Param("sequenceId") Long sequenceId, @Param("currentSeq") Long currentSeq);
 }

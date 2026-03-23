@@ -194,16 +194,25 @@ export async function scanByCamera(scanType = 'barCode') {
 
 /**
  * 播放扫码提示音
+ * 注意：声音文件为可选，如无声音文件则不播放
  */
 function playScanSound(type) {
   // #ifdef APP-PLUS
   try {
-    const sound = plus.audio.createPlayer(
-      type === 'success' ? '/static/sounds/success.mp3' : '/static/sounds/error.mp3'
-    )
-    sound.play()
+    // 检查声音文件是否存在（可选功能）
+    const soundPath = type === 'success' ? '_www/sounds/success.mp3' : '_www/sounds/error.mp3'
+    plus.io.resolveLocalFileSystemURL(soundPath, (entry) => {
+      if (entry) {
+        const sound = plus.audio.createPlayer(soundPath)
+        sound.play()
+      }
+    }, (err) => {
+      // 声音文件不存在，跳过播放
+      console.log('声音文件不存在，跳过播放')
+    })
   } catch (e) {
     // 忽略声音播放失败
+    console.log('声音播放失败:', e)
   }
   // #endif
 }

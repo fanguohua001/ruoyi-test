@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="交易编号" prop="transactionNo">
-        <el-input
-          v-model="queryParams.transactionNo"
-          placeholder="请输入交易编号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="80px">
       <el-form-item label="交易类型" prop="transactionType">
         <el-select v-model="queryParams.transactionType" placeholder="交易类型" clearable>
           <el-option label="入库" value="1" />
@@ -42,12 +34,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="关联单号" prop="referenceNo">
-        <el-input
-          v-model="queryParams.referenceNo"
-          placeholder="请输入关联单号"
-          clearable
-          @keyup.enter.native="handleQuery"
+      <el-form-item label="时间范围" prop="dateRange">
+        <el-date-picker
+          v-model="queryParams.dateRange"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          value-format="yyyy-MM-dd"
+          style="width: 240px"
         />
       </el-form-item>
       <el-form-item>
@@ -131,17 +126,38 @@ export default {
         productCode: undefined,
         productName: undefined,
         batchNo: undefined,
-        referenceNo: undefined
+        dateRange: []
       }
     }
   },
   created() {
+    // 默认最近一个月
+    const endDate = new Date()
+    const startDate = new Date()
+    startDate.setDate(startDate.getDate() - 30)
+    this.queryParams.dateRange = [
+      this.formatDate(startDate),
+      this.formatDate(endDate)
+    ]
     this.getList()
   },
   methods: {
+    formatDate(date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    },
     getList() {
       this.loading = true
-      listLedger(this.queryParams).then(response => {
+      // 将 dateRange 转换为 beginTime 和 endTime
+      const params = { ...this.queryParams }
+      if (params.dateRange && params.dateRange.length === 2) {
+        params.beginTime = params.dateRange[0]
+        params.endTime = params.dateRange[1]
+        delete params.dateRange
+      }
+      listLedger(params).then(response => {
         this.ledgerList = response.rows
         this.total = response.total
         this.loading = false
@@ -153,6 +169,14 @@ export default {
     },
     resetQuery() {
       this.resetForm("queryForm")
+      // 重置为最近一个月
+      const endDate = new Date()
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - 30)
+      this.queryParams.dateRange = [
+        this.formatDate(startDate),
+        this.formatDate(endDate)
+      ]
       this.handleQuery()
     },
     handleExport() {

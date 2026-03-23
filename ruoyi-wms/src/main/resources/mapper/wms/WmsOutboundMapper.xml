@@ -63,6 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="priority != null  and priority != ''"> and priority = #{priority}</if>
             <if test="waveNo != null  and waveNo != ''"> and wave_no = #{waveNo}</if>
         </where>
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectOutboundOrderById" parameterType="Long" resultMap="WmsOutboundOrderResult">

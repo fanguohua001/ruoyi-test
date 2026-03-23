@@ -44,7 +44,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="referenceType != null  and referenceType != ''"> and reference_type = #{referenceType}</if>
             <if test="referenceId != null "> and reference_id = #{referenceId}</if>
             <if test="referenceNo != null  and referenceNo != ''"> and reference_no = #{referenceNo}</if>
+            <if test="beginTime != null"> and create_time &gt;= #{beginTime}</if>
+            <if test="endTime != null"> and create_time &lt;= DATE_ADD(#{endTime}, INTERVAL 1 DAY)</if>
         </where>
+        ORDER BY create_time DESC
     </select>
 
     <select id="selectWmsInventoryLedgerById" parameterType="Long" resultMap="WmsInventoryLedgerResult">
